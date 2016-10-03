@@ -1,6 +1,33 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.6)
 project(memoire)
 
-add_executable(memoire main.cpp)
+################################################################################
+# Dependencies                                                                 #
+################################################################################
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -pedantic -O2 -g")
+
+# C++11
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Qt
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+find_package(Qt5 REQUIRED Charts Widgets)
+
+################################################################################
+# Build configuration                                                          #
+################################################################################
+
+add_executable(memoire
+  event.cpp
+  main.cpp
+  main_window.cpp
+  parser.cpp
+  run.cpp
+  run_config.cpp)
+target_link_libraries(memoire Qt5::Widgets)
+target_link_libraries(memoire qcustomplot)
 
 install(TARGETS memoire RUNTIME DESTINATION bin)

@@ -1,5 +1,6 @@
 #include "main_window.h"
 
+#include <QAction>
 #include <QSplitter>
 #include <QToolBar>
 #include <QToolButton>

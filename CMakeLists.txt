@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Qt
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-find_package(Qt5 REQUIRED Charts Widgets)
+find_package(Qt4 REQUIRED QtGui)
 
 ################################################################################
 # Build configuration                                                          #
@@ -25,9 +25,9 @@ add_executable(memoire
   main.cpp
   main_window.cpp
   parser.cpp
+  qcustomplot.cpp
   run.cpp
   run_config.cpp)
-target_link_libraries(memoire Qt5::Widgets)
-target_link_libraries(memoire qcustomplot)
+target_link_libraries(memoire Qt4::QtGui)
 
 install(TARGETS memoire RUNTIME DESTINATION bin)

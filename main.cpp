@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <QtWidgets/QApplication>
+#include <QApplication>
 
 #include "histogram.h"
 #include "histogram-qt.h"

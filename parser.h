@@ -20,6 +20,10 @@ class starlight_parser : public parser
 {
   std::ifstream _in;
   std::string _filename;
+
+private:
+  starlight_parser(const starlight_parser &) {}
+
 public:
   explicit starlight_parser(const std::string &filename);
 

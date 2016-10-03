@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   rc->add_cut("|eta(rho)| < 2.5", &cut_eta);
 
   // Loop over events
-  starlight_parser parser = starlight_parser("/home/louis/Documents/ULB/MA1/Mémoire/starlight/data/slight.rho.out");
+  starlight_parser parser("/home/louis/Documents/ULB/MA1/Mémoire/starlight/data/slight.rho.out");
   main_window *win = new main_window(r, rc, &parser);
   win->show();
 

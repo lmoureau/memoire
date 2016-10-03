@@ -84,5 +84,5 @@ event starlight_parser::next()
 
 void starlight_parser::reset()
 {
-  _in.seekg(0);
+  _in.seekg(std::ios_base::beg);
 }

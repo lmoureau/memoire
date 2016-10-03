@@ -23,7 +23,7 @@ namespace {
   {
     std::string token;
     in >> token;
-    return std::strtod(&token[0], nullptr);
+    return std::strtod(&token[0], 0);
   }
 }
 

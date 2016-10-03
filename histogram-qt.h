@@ -19,13 +19,14 @@ void set_graph_data(QCPGraph *graph,
   typedef _axis_type_ axis_type;
   typedef _bin_type_ bin_type;
   typedef _binned_type_ binned_type;
+  typedef basic_histogram<BASIC_HISTOGRAM_PARAMS> histogram_type;
 
   const axis_type axis = histogram.axis();
 
-  int i = 0;
-  for (const binned_type &bin : histogram) {
-    graph->addData(axis.bin_center(i), bin);
-    i++;
+  typename histogram_type::const_iterator it = histogram.begin();
+  typename histogram_type::const_iterator end = histogram.end();
+  for (int i = 0; it != end; ++it, ++i) {
+    graph->addData(axis.bin_center(i), *it);
   }
 }
 

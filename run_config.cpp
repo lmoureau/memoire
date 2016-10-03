@@ -28,9 +28,10 @@ void run_config::item_changed()
 
 void run_config::fill_run(run &r) const
 {
-  for (const cut_info &info : _cuts) {
-    if (info.enabled) {
-      r.add_cut(info.name, info.function);
+  for (std::vector<cut_info>::const_iterator it = _cuts.begin();
+       it != _cuts.end(); ++it) {
+    if (it->enabled) {
+      r.add_cut(it->name, it->function);
     }
   }
 }

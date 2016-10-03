@@ -84,5 +84,8 @@ event starlight_parser::next()
 
 void starlight_parser::reset()
 {
-  _in.seekg(std::ios_base::beg);
+  if (_in.is_open()) {
+    _in.close();
+  }
+  _in.open(_filename);
 }

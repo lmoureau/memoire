@@ -12,7 +12,7 @@ template<typename _axis_type_>
 class linear_axis
 {
 public:
-  using axis_type = _axis_type_;
+  typedef _axis_type_ axis_type;
 
 private:
   axis_type _begin, _end;
@@ -36,7 +36,7 @@ template<typename _bin_type_>
 class out_of_range_record
 {
 public:
-  using bin_type = _bin_type_;
+  typedef _bin_type_ bin_type;
 
 private:
   bin_type _underflow, _overflow;
@@ -97,14 +97,14 @@ template<
 class basic_histogram
 {
 public:
-  using axis_type = _axis_type_;
-  using binned_type = _binned_type_;
-  using bin_type = _bin_type_;
-  using out_of_range_type = _out_of_range_type_;
-  using vector_type = std::vector<bin_type>;
+  typedef _axis_type_ axis_type;
+  typedef _binned_type_ binned_type;
+  typedef _bin_type_ bin_type;
+  typedef _out_of_range_type_ out_of_range_type;
+  typedef std::vector<bin_type> vector_type;
 
-  using const_iterator = typename vector_type::const_iterator;
-  using iterator = typename vector_type::iterator;
+  typedef typename vector_type::const_iterator const_iterator;
+  typedef typename vector_type::iterator iterator;
 
 private:
   axis_type _axis;
@@ -166,7 +166,7 @@ void basic_histogram<BASIC_HISTOGRAM_PARAMS>::bin(const binned_type &value,
   }
 }
 
-using histogram = basic_histogram<double, double>;
+typedef basic_histogram<double, double> histogram;
 
 } // namespace hist
 

@@ -18,8 +18,8 @@ public:
     std::map<std::string, hist::histogram> before_cuts;
   };
 
-  using cut_fct = std::function<bool (const event &evt)>;
-  using fill_fct = std::function<double (const event &evt)>;
+  typedef std::function<bool (const event &evt)> cut_fct;
+  typedef std::function<double (const event &evt)> fill_fct;
 
 private:
   struct cut

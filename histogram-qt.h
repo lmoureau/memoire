@@ -16,9 +16,9 @@ BASIC_HISTOGRAM_PARAMS_DEF
 void set_graph_data(QCPGraph *graph,
                     const basic_histogram<BASIC_HISTOGRAM_PARAMS> &histogram)
 {
-  using axis_type = _axis_type_;
-  using bin_type = _bin_type_;
-  using binned_type = _binned_type_;
+  typedef _axis_type_ axis_type;
+  typedef _bin_type_ bin_type;
+  typedef _binned_type_ binned_type;
 
   const axis_type axis = histogram.axis();
 

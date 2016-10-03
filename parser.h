@@ -23,9 +23,9 @@ class starlight_parser : public parser
 public:
   explicit starlight_parser(const std::string &filename);
 
-  bool end() override;
-  event next() override;
-  void reset() override;
+  bool end();
+  event next();
+  void reset();
 };
 
 #endif // PARSER_H

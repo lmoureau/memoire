@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     return 0.5 * std::log((rho.t() + rho.z()) / (rho.t() - rho.z()));
   });
 
-  hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-5, 5, 100);
+  hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-10, 10, 100);
   r.add_fill("eta", eta_axis, [](const event &e) {
     lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
     lorentz::vec fake = lorentz::vec::mxyz(0, rho.x(), rho.y(), rho.z());

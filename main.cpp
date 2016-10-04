@@ -66,6 +66,17 @@ int main(int argc, char **argv) {
   rc->add_cut("pt(pi) > 0.3", &cut_pt);
   rc->add_cut("M(pi pi) > 0.5", &cut_m_pi_pi);
   rc->add_cut("|eta(rho)| < 2.5", &cut_eta);
+  rc->add_cut("|eta(pi)| < 3", [](const event &e) {
+    bool ok = true;
+    for (int i = 0; i < 2; ++i) {
+      lorentz::vec fake = lorentz::vec::mxyz(0, e.tracks[i].p.x(),
+                                                e.tracks[i].p.y(),
+                                                e.tracks[i].p.z());
+      double eta = std::atanh(fake.z() / fake.t());
+      ok &= std::abs(eta) < 3;
+    }
+    return ok;
+  });
 
   // Loop over events
   starlight_parser parser("/home/louis/Documents/ULB/MA1/Mémoire/starlight/data/slight.rho.out");

@@ -41,10 +41,17 @@ int main(int argc, char **argv) {
   run r;
   hist::linear_axis<double> mass_axis = hist::linear_axis<double>(0, 1.5, 75);
   r.add_fill("mass", mass_axis, &get_mass);
+
   hist::linear_axis<double> pt_axis = hist::linear_axis<double>(0, 1, 200);
-  r.add_fill("pt^2 ~= t", pt_axis, [](const event &e) {
+  r.add_fill("pt^2 ~= -t", pt_axis, [](const event &e) {
     lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
     return rho.x() * rho.x() + rho.y() * rho.y();
+  });
+
+  hist::linear_axis<double> y_axis = hist::linear_axis<double>(-5, 5, 100);
+  r.add_fill("y", y_axis, [](const event &e) {
+    lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
+    return 0.5 * std::log((rho.t() + rho.z()) / (rho.t() - rho.z()));
   });
 
   // Cuts

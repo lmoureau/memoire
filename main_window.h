@@ -16,6 +16,7 @@ class main_window : public QMainWindow
   run_config *_config;
   parser *_parser;
   QCustomPlot *_plot;
+  QListWidget *_plots;
   bool _log_scale;
 
 public:

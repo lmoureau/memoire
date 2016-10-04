@@ -12,9 +12,10 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
   _config(rc),
   _parser(in),
   _plot(new QCustomPlot),
+  _plots(new QListWidget),
   _log_scale(false)
 {
-  setWindowTitle("Hé Hé");
+  setWindowTitle("He He");
 
   _plot->setAutoAddPlottableToLegend(true);
   _plot->legend->setVisible(true);
@@ -28,9 +29,12 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
 
   refresh_results();
   connect(_config, SIGNAL(config_changed()), this, SLOT(refresh_results()));
+  connect(_plots, SIGNAL(currentRowChanged(int)),
+          this, SLOT(refresh_results()));
 
   QSplitter *splitter = new QSplitter(Qt::Horizontal);
   splitter->addWidget(_config);
+  splitter->addWidget(_plots);
   splitter->addWidget(_plot);
   setCentralWidget(splitter);
 
@@ -50,15 +54,29 @@ void main_window::refresh_results()
   _parser->reset();
   run::result result = r(_parser);
 
+  QStringList plot_names;
+  for (const auto &element : result.before_cuts) {
+    plot_names << QString::fromStdString(element.first);
+  }
+  int selected = _plots->currentRow();
+  selected = selected < 0 ? 0 : selected;
+  _plots->clear();
+  _plots->addItems(plot_names);
+  _plots->blockSignals(true);
+  _plots->setCurrentRow(selected);
+  _plots->blockSignals(false);
+
+  std::string name = plot_names[selected].toStdString();
+
   _plot->clearGraphs();
 
   _plot->addGraph();
-  hist::qt::set_graph_data(_plot->graph(), result.before_cuts.at("mass"));
+  hist::qt::set_graph_data(_plot->graph(), result.before_cuts.at(name));
   _plot->graph()->setName("Before cuts");
   _plot->graph()->setLineStyle(QCPGraph::lsStepCenter);
 
   _plot->addGraph();
-  hist::qt::set_graph_data(_plot->graph(), result.after_cuts.at("mass"));
+  hist::qt::set_graph_data(_plot->graph(), result.after_cuts.at(name));
   _plot->graph()->setName("After cuts");
   _plot->graph()->setBrush(QBrush(Qt::blue, Qt::Dense6Pattern));
   _plot->graph()->setLineStyle(QCPGraph::lsStepCenter);

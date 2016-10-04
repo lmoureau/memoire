@@ -55,10 +55,10 @@ linear_axis<_axis_type_>::linear_axis(const axis_type &begin,
 {}
 
 #ifdef BASIC_HISTOGRAM_PARAMS_DEF
-  #error Please don't define BASIC_HISTOGRAM_PARAMS_DEF
+  #error Please do not define BASIC_HISTOGRAM_PARAMS_DEF
 #endif
 #ifdef BASIC_HISTOGRAM_PARAMS
-  #error Please don't define BASIC_HISTOGRAM_PARAMS
+  #error Please do not define BASIC_HISTOGRAM_PARAMS
 #endif
 
 #define BASIC_HISTOGRAM_PARAMS_DEF \

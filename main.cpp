@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
   run r;
   hist::linear_axis<double> mass_axis = hist::linear_axis<double>(0, 1.5, 75);
   r.add_fill("mass", mass_axis, &get_mass);
-  r.add_fill("pt² ≃ t", mass_axis, [](const event &e) {
+  hist::linear_axis<double> pt_axis = hist::linear_axis<double>(0, 1, 200);
+  r.add_fill("pt^2 ~= t", pt_axis, [](const event &e) {
     lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
     return rho.x() * rho.x() + rho.y() * rho.y();
   });

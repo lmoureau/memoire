@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <string>
 
+#include <TFile.h>
+
 starlight_parser::starlight_parser(const std::string &filename) :
   _filename(filename),
   _in(filename)
@@ -88,4 +90,28 @@ void starlight_parser::reset()
     _in.close();
   }
   _in.open(_filename);
+}
+
+root_parser::root_parser(const std::string &filename) :
+  _filename(filename),
+  _in()
+{
+  TFile *file = new TFile(filename.c_str());
+  file->ls();
+  delete file;
+}
+
+bool root_parser::end()
+{
+  return false;
+}
+
+event root_parser::next()
+{
+  event evt;
+  return evt;
+}
+
+void root_parser::reset()
+{
 }

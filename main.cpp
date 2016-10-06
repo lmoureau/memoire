@@ -78,6 +78,8 @@ int main(int argc, char **argv) {
     return ok;
   });
 
+  root_parser rparser("/home/louis/Documents/ULB/MA1/Mémoire/starlight/data/pipiv_GR_pipi_m_pt_y.root");
+
   // Loop over events
   starlight_parser parser("/home/louis/Documents/ULB/MA1/Mémoire/starlight/data/slight.rho.out");
   main_window *win = new main_window(r, rc, &parser);

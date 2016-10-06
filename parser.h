@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 
+#include <TTreeReader.h>
+
 #include "event.h"
 
 class parser
@@ -26,6 +28,22 @@ private:
 
 public:
   explicit starlight_parser(const std::string &filename);
+
+  bool end();
+  event next();
+  void reset();
+};
+
+class root_parser : public parser
+{
+  std::string _filename;
+  TTreeReader _in;
+
+private:
+  root_parser(const root_parser &) {}
+
+public:
+  explicit root_parser(const std::string &filename);
 
   bool end();
   event next();

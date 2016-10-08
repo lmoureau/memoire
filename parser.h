@@ -2,9 +2,8 @@
 #define PARSER_H
 
 #include <fstream>
+#include <memory>
 #include <string>
-
-#include <TTreeReader.h>
 
 #include "event.h"
 
@@ -37,7 +36,8 @@ public:
 class root_parser : public parser
 {
   std::string _filename;
-  TTreeReader _in;
+  struct data;
+  std::shared_ptr<data> _d;
 
 private:
   root_parser(const root_parser &) {}

@@ -4,6 +4,7 @@
 #include <string>
 
 #include <TFile.h>
+#include <TTree.h>
 
 starlight_parser::starlight_parser(const std::string &filename) :
   _filename(filename),
@@ -92,26 +93,61 @@ void starlight_parser::reset()
   _in.open(_filename);
 }
 
+struct root_parser::data
+{
+  TFile *file;
+  TTree *tree;
+  long count, i;
+
+  double rec_pxp;
+  double rec_pyp;
+  double rec_pzp;
+  double rec_pxm;
+  double rec_pym;
+  double rec_pzm;
+};
+
 root_parser::root_parser(const std::string &filename) :
   _filename(filename),
-  _in()
+  _d(new data)
 {
-  TFile *file = new TFile(filename.c_str());
-  file->ls();
-  delete file;
+  // Trees: rho_gen, rho_rec
+  _d->file = new TFile(filename.c_str());
+  _d->file->GetObject("rho_rec", _d->tree);
+  _d->count = _d->tree->GetEntries();
+  _d->i = 0;
+
+  _d->tree->SetBranchAddress("rec_pxp", &_d->rec_pxp);
+  _d->tree->SetBranchAddress("rec_pyp", &_d->rec_pyp);
+  _d->tree->SetBranchAddress("rec_pzp", &_d->rec_pzp);
+
+  _d->tree->SetBranchAddress("rec_pxm", &_d->rec_pxm);
+  _d->tree->SetBranchAddress("rec_pym", &_d->rec_pym);
+  _d->tree->SetBranchAddress("rec_pzm", &_d->rec_pzm);
 }
 
 bool root_parser::end()
 {
-  return false;
+  return _d->i >= _d->count;
 }
 
 event root_parser::next()
 {
+  _d->tree->GetEntry(_d->i++);
+
   event evt;
+
+  track trk;
+  trk.p = lorentz::vec::mxyz(.14, _d->rec_pxp, _d->rec_pyp, _d->rec_pzp);
+  evt.tracks.push_back(trk);
+
+  trk.p = lorentz::vec::mxyz(.14, _d->rec_pxm, _d->rec_pym, _d->rec_pzm);
+  evt.tracks.push_back(trk);
+
   return evt;
 }
 
 void root_parser::reset()
 {
+  _d->i = 0;
 }

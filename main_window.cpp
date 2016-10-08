@@ -56,7 +56,7 @@ void main_window::refresh_results()
 
   QStringList plot_names;
   for (const auto &element : result.before_cuts) {
-    plot_names << QString::fromStdString(element.first);
+    plot_names << element.first.c_str();
   }
   int selected = _plots->currentRow();
   selected = selected < 0 ? 0 : selected;
@@ -66,7 +66,7 @@ void main_window::refresh_results()
   _plots->setCurrentRow(selected);
   _plots->blockSignals(false);
 
-  std::string name = plot_names[selected].toStdString();
+  std::string name = plot_names[selected].toLatin1().data();
 
   _plot->clearGraphs();
 

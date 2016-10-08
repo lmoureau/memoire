@@ -11,8 +11,7 @@ run_config::run_config(QWidget *parent) :
 void run_config::add_cut(const std::string &name, run::cut_fct cut)
 {
   _cuts.push_back(cut_info{name, cut, true});
-  QListWidgetItem *item = new QListWidgetItem(QString::fromStdString(name),
-                                              this);
+  QListWidgetItem *item = new QListWidgetItem(name.c_str(), this);
   item->setCheckState(Qt::Checked);
   item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
   emit config_changed();

@@ -15,8 +15,9 @@ void run::add_fill(const std::string &name,
 
 run::result run::operator() (parser *in)
 {
-  while (!in->end()) {
-    process_event(in->next());
+  for (in->read(); !in->end(); in->read()) {
+    process_gen_event(in->gen());
+    process_rec_event(in->rec());
   }
   result r;
   for (std::vector<fill>::const_iterator it = _fills.begin();
@@ -27,12 +28,16 @@ run::result run::operator() (parser *in)
   return r;
 }
 
-void run::process_event(const event &evt)
+void run::process_gen_event(const event &evt)
 {
   for (std::vector<fill>::iterator it = _fills.begin();
        it != _fills.end(); ++it) {
     it->before_cuts.bin(it->function(evt));
   }
+}
+
+void run::process_rec_event(const event &evt)
+{
   for (std::vector<cut>::const_iterator it = _cuts.cbegin();
        it != _cuts.end(); ++it) {
     if (!it->function(evt)) {

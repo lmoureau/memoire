@@ -30,10 +30,8 @@ namespace {
   }
 }
 
-event starlight_parser::next()
+void starlight_parser::read()
 {
-  event evt;
-
   // Intermediate data
   std::string prefix;
   int ntracks;
@@ -41,11 +39,13 @@ event starlight_parser::next()
   // Unused data
   int itrash;
 
+  _current = event();
+
   _in >> prefix;
   if (prefix != "EVENT:") {
     throw 1;
   }
-  _in >> evt.id;
+  _in >> _current.id;
   _in >> ntracks;
   _in >> itrash; // vertex count
 
@@ -79,10 +79,18 @@ event starlight_parser::next()
     char line[1024];
     _in.getline(line, sizeof(line));
 
-    evt.tracks.push_back(trk);
+    _current.tracks.push_back(trk);
   }
+}
 
-  return evt;
+event starlight_parser::gen()
+{
+  return _current;
+}
+
+event starlight_parser::rec()
+{
+  return _current;
 }
 
 void starlight_parser::reset()
@@ -96,8 +104,16 @@ void starlight_parser::reset()
 struct root_parser::data
 {
   TFile *file;
-  TTree *tree;
+  TTree *gen_tree, *rec_tree;
   long count, i;
+  event gen, rec;
+
+  double gen_pxp;
+  double gen_pyp;
+  double gen_pzp;
+  double gen_pxm;
+  double gen_pym;
+  double gen_pzm;
 
   double rec_pxp;
   double rec_pyp;
@@ -113,17 +129,24 @@ root_parser::root_parser(const std::string &filename) :
 {
   // Trees: rho_gen, rho_rec
   _d->file = new TFile(filename.c_str());
-  _d->file->GetObject("rho_rec", _d->tree);
-  _d->count = _d->tree->GetEntries();
+  _d->file->GetObject("rho_rec", _d->rec_tree);
+  _d->file->GetObject("rho_gen", _d->gen_tree);
+  _d->count = _d->rec_tree->GetEntries();
   _d->i = 0;
 
-  _d->tree->SetBranchAddress("rec_pxp", &_d->rec_pxp);
-  _d->tree->SetBranchAddress("rec_pyp", &_d->rec_pyp);
-  _d->tree->SetBranchAddress("rec_pzp", &_d->rec_pzp);
+  _d->gen_tree->SetBranchAddress("gen_pxp", &_d->gen_pxp);
+  _d->gen_tree->SetBranchAddress("gen_pyp", &_d->gen_pyp);
+  _d->gen_tree->SetBranchAddress("gen_pzp", &_d->gen_pzp);
+  _d->gen_tree->SetBranchAddress("gen_pxm", &_d->gen_pxm);
+  _d->gen_tree->SetBranchAddress("gen_pym", &_d->gen_pym);
+  _d->gen_tree->SetBranchAddress("gen_pzm", &_d->gen_pzm);
 
-  _d->tree->SetBranchAddress("rec_pxm", &_d->rec_pxm);
-  _d->tree->SetBranchAddress("rec_pym", &_d->rec_pym);
-  _d->tree->SetBranchAddress("rec_pzm", &_d->rec_pzm);
+  _d->rec_tree->SetBranchAddress("rec_pxp", &_d->rec_pxp);
+  _d->rec_tree->SetBranchAddress("rec_pyp", &_d->rec_pyp);
+  _d->rec_tree->SetBranchAddress("rec_pzp", &_d->rec_pzp);
+  _d->rec_tree->SetBranchAddress("rec_pxm", &_d->rec_pxm);
+  _d->rec_tree->SetBranchAddress("rec_pym", &_d->rec_pym);
+  _d->rec_tree->SetBranchAddress("rec_pzm", &_d->rec_pzm);
 }
 
 bool root_parser::end()
@@ -131,20 +154,34 @@ bool root_parser::end()
   return _d->i >= _d->count;
 }
 
-event root_parser::next()
+void root_parser::read()
 {
-  _d->tree->GetEntry(_d->i++);
+  _d->gen_tree->GetEntry(_d->i++);
+  _d->rec_tree->GetEntry(_d->i++);
 
-  event evt;
+  _d->gen = event();
+  _d->rec = event();
 
   track trk;
+  trk.p = lorentz::vec::mxyz(.14, _d->gen_pxp, _d->gen_pyp, _d->gen_pzp);
+  _d->gen.tracks.push_back(trk);
+  trk.p = lorentz::vec::mxyz(.14, _d->gen_pxm, _d->gen_pym, _d->gen_pzm);
+  _d->gen.tracks.push_back(trk);
+
   trk.p = lorentz::vec::mxyz(.14, _d->rec_pxp, _d->rec_pyp, _d->rec_pzp);
-  evt.tracks.push_back(trk);
-
+  _d->rec.tracks.push_back(trk);
   trk.p = lorentz::vec::mxyz(.14, _d->rec_pxm, _d->rec_pym, _d->rec_pzm);
-  evt.tracks.push_back(trk);
+  _d->rec.tracks.push_back(trk);
+}
 
-  return evt;
+event root_parser::gen()
+{
+  return _d->gen;
+}
+
+event root_parser::rec()
+{
+  return _d->rec;
 }
 
 void root_parser::reset()

@@ -50,7 +50,8 @@ public:
   result operator() (parser *in);
 
 private:
-  void process_event(const event &evt);
+  void process_gen_event(const event &evt);
+  void process_rec_event(const event &evt);
 };
 
 #endif // RUN_H

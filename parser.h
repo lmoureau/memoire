@@ -13,7 +13,9 @@ public:
   virtual ~parser() {}
 
   virtual bool end() = 0;
-  virtual event next() = 0;
+  virtual void read() = 0;
+  virtual event rec() = 0;
+  virtual event gen() = 0;
   virtual void reset() = 0;
 };
 
@@ -21,15 +23,17 @@ class starlight_parser : public parser
 {
   std::ifstream _in;
   std::string _filename;
+  event _current;
 
-private:
   starlight_parser(const starlight_parser &) {}
 
 public:
   explicit starlight_parser(const std::string &filename);
 
   bool end();
-  event next();
+  void read();
+  event rec();
+  event gen();
   void reset();
 };
 
@@ -46,7 +50,9 @@ public:
   explicit root_parser(const std::string &filename);
 
   bool end();
-  event next();
+  void read();
+  event rec();
+  event gen();
   void reset();
 };
 

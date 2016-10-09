@@ -30,6 +30,32 @@ void set_graph_data(QCPGraph *graph,
   }
 }
 
+class histogram2d_plottable : public QCPAbstractPlottable
+{
+  Q_OBJECT
+
+  histogram2d _histo;
+
+public:
+  explicit histogram2d_plottable(QCPAxis *x, QCPAxis *y,
+                                 const histogram2d &histo) :
+    QCPAbstractPlottable(x, y),
+    _histo(histo)
+  {}
+
+  void clearData() { /* Nothing */ }
+  double selectTest(const QPointF &pos, bool onlySelectable,
+                    QVariant *details = nullptr) const;
+  QCPRange getKeyRange(bool &foundRange,
+                       SignDomain inSignDomain = sdBoth) const;
+  QCPRange getValueRange(bool &foundRange,
+                         SignDomain inSignDomain = sdBoth) const;
+
+protected:
+  void draw(QCPPainter *painter);
+  void drawLegendIcon(QCPPainter *painter, const QRectF &rect) const;
+};
+
 } // namespace qt
 } // namespace hist
 

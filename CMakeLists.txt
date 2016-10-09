@@ -29,6 +29,7 @@ find_package(Qt4 REQUIRED QtGui)
 
 add_executable(memoire
   event.cpp
+  histogram-qt.cpp
   main.cpp
   main_window.cpp
   parser.cpp

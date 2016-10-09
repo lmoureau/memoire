@@ -38,6 +38,7 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
   splitter->addWidget(_config);
   splitter->addWidget(_plots);
   splitter->addWidget(_plot);
+  splitter->setStretchFactor(2, 100);
   setCentralWidget(splitter);
 
   QToolBar *tools = new QToolBar();

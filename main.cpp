@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
   hist::linear_axis<double> mass_axis = hist::linear_axis<double>(0, 1.5, 75);
   r.add_fill("mass", mass_axis, &get_mass);
 
-  hist::linear_axis<double> pt_axis = hist::linear_axis<double>(0, 1, 200);
+  hist::linear_axis<double> pt_axis = hist::linear_axis<double>(0, 1, 100);
   r.add_fill("pt^2 ~= -t", pt_axis, [](const event &e) {
     lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
     return rho.x() * rho.x() + rho.y() * rho.y();
@@ -60,6 +60,9 @@ int main(int argc, char **argv) {
     lorentz::vec fake = lorentz::vec::mxyz(0, rho.x(), rho.y(), rho.z());
     return std::atanh(fake.z() / fake.t());
   });
+
+  hist::histogram2d h2d(y_axis, eta_axis);
+  h2d.bin(hist::bin2d(0, 0));
 
   // Cuts
   run_config *rc = new run_config;
@@ -83,7 +86,7 @@ int main(int argc, char **argv) {
   // Loop over events
   starlight_parser parser("/user/lmoureaux/memoire/build/slight.rho.out");
   main_window *win = new main_window(r, rc, &rparser);
-  win->show();
+  win->showMaximized();
 
   return app.exec();
 }

@@ -10,49 +10,61 @@ void run::add_fill(const std::string &name,
                    const fill_fct fct)
 {
   _fills.push_back(fill{
-      name, fct, hist::histogram(axis), hist::histogram(axis) });
+      name,
+      fct,
+      hist::histogram(axis),
+      hist::histogram(axis),
+      hist::histogram2d(axis, axis) });
 }
 
 run::result run::operator() (parser *in)
 {
   for (in->read(); !in->end(); in->read()) {
-    if (in->has_gen()) {
-      process_gen_event(in->gen());
-    }
-    if (in->has_rec()) {
-      process_rec_event(in->rec());
-    }
+    process_event(in);
   }
   result r;
   for (std::vector<fill>::const_iterator it = _fills.begin();
        it != _fills.end(); ++it) {
     item i = item {
       it->after_cuts,
-      it->before_cuts
+      it->before_cuts,
+      it->migration
     };
     r.histos.insert(std::make_pair(it->name, i));
   }
   return r;
 }
 
-void run::process_gen_event(const event &evt)
+void run::process_event(parser *in)
 {
-  for (std::vector<fill>::iterator it = _fills.begin();
-       it != _fills.end(); ++it) {
-    it->before_cuts.bin(it->function(evt));
-  }
-}
+  bool has_gen = in->has_gen();
+  event gen = has_gen ? in->gen() : event();
+  bool has_rec = in->has_rec();
+  event rec = has_rec ? in->rec() : event();
 
-void run::process_rec_event(const event &evt)
-{
-  for (std::vector<cut>::const_iterator it = _cuts.cbegin();
-       it != _cuts.end(); ++it) {
-    if (!it->function(evt)) {
-      return;
+  bool passes_cuts = true;
+  if (has_rec) {
+    for (const cut &c : _cuts) {
+      if (!c.function(rec)) {
+        passes_cuts = false;
+        break;
+      }
     }
   }
-  for (std::vector<fill>::iterator it = _fills.begin();
-       it != _fills.end(); ++it) {
-    it->after_cuts.bin(it->function(evt));
+
+  for (fill &f : _fills) {
+    double gen_val = 0, rec_val = 0;
+    if (has_gen) {
+      gen_val = f.function(gen);
+      f.before_cuts.bin(gen_val);
+    }
+    if (has_rec) {
+      rec_val = f.function(rec);
+      f.after_cuts.bin(rec_val);
+    }
+    if (has_gen && has_rec) {
+      f.migration.bin(hist::bin2d(gen_val, rec_val));
+      // TODO fake, miss
+    }
   }
 }

@@ -16,6 +16,7 @@ public:
   {
     hist::histogram after_cuts;
     hist::histogram before_cuts;
+    hist::histogram2d migration;
   };
 
   struct result
@@ -39,6 +40,7 @@ private:
     fill_fct function;
     hist::histogram before_cuts;
     hist::histogram after_cuts;
+    hist::histogram2d migration;
   };
 
   std::vector<fill> _fills;
@@ -55,8 +57,7 @@ public:
   result operator() (parser *in);
 
 private:
-  void process_gen_event(const event &evt);
-  void process_rec_event(const event &evt);
+  void process_event(parser *in);
 };
 
 #endif // RUN_H

@@ -36,3 +36,9 @@ Makefile*
 # QtCtreator CMake
 CMakeLists.txt.user
 
+# Kdevelop
+/.kdev4
+
+# CMake build
+/build
+

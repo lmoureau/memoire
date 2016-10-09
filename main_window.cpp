@@ -21,10 +21,12 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
   _plot->legend->setVisible(true);
   _plot->axisRect()->setRangeZoom(Qt::Horizontal);
   _plot->axisRect()->setRangeDrag(Qt::Horizontal);
-  _plot->axisRect()->setupFullAxesBox(true);
   _plot->setInteractions(
       QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
   _plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  _plot->yAxis2->setTicks(true);
+  _plot->yAxis2->setTickLabels(true);
+  _plot->yAxis2->setVisible(true);
   resize(600, 400);
 
   refresh_results();
@@ -68,7 +70,16 @@ void main_window::refresh_results()
 
   std::string name = plot_names[selected].toLatin1().data();
 
-  _plot->clearGraphs();
+  _plot->clearPlottables();
+
+  hist::qt::histogram2d_plottable *migration =
+      new hist::qt::histogram2d_plottable(
+        _plot->xAxis,
+        _plot->yAxis2,
+        result.histos.at(name).migration);
+  migration->setName("Migration matrix");
+  migration->setBrush(QBrush(Qt::darkGreen));
+  _plot->addPlottable(migration);
 
   _plot->addGraph();
   hist::qt::set_graph_data(_plot->graph(),
@@ -91,6 +102,7 @@ void main_window::refresh_results()
 
   _plot->xAxis->rescale();
   _plot->yAxis->rescale();
+  _plot->yAxis2->rescale();
 
   _plot->replot();
 }

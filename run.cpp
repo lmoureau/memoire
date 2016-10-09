@@ -26,8 +26,11 @@ run::result run::operator() (parser *in)
   result r;
   for (std::vector<fill>::const_iterator it = _fills.begin();
        it != _fills.end(); ++it) {
-    r.before_cuts.insert(std::make_pair(it->name, it->before_cuts));
-    r.after_cuts.insert(std::make_pair(it->name, it->after_cuts));
+    item i = item {
+      it->after_cuts,
+      it->before_cuts
+    };
+    r.histos.insert(std::make_pair(it->name, i));
   }
   return r;
 }

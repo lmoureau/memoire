@@ -12,10 +12,15 @@
 class run
 {
 public:
+  struct item
+  {
+    hist::histogram after_cuts;
+    hist::histogram before_cuts;
+  };
+
   struct result
   {
-    std::map<std::string, hist::histogram> after_cuts;
-    std::map<std::string, hist::histogram> before_cuts;
+    std::map<std::string, item> histos;
   };
 
   typedef std::function<bool (const event &evt)> cut_fct;

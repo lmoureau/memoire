@@ -55,7 +55,7 @@ void main_window::refresh_results()
   run::result result = r(_parser);
 
   QStringList plot_names;
-  for (const auto &element : result.before_cuts) {
+  for (const auto &element : result.histos) {
     plot_names << element.first.c_str();
   }
   int selected = _plots->currentRow();
@@ -71,12 +71,14 @@ void main_window::refresh_results()
   _plot->clearGraphs();
 
   _plot->addGraph();
-  hist::qt::set_graph_data(_plot->graph(), result.before_cuts.at(name));
+  hist::qt::set_graph_data(_plot->graph(),
+                           result.histos.at(name).before_cuts);
   _plot->graph()->setName("Before cuts");
   _plot->graph()->setLineStyle(QCPGraph::lsStepCenter);
 
   _plot->addGraph();
-  hist::qt::set_graph_data(_plot->graph(), result.after_cuts.at(name));
+  hist::qt::set_graph_data(_plot->graph(),
+                           result.histos.at(name).after_cuts);
   _plot->graph()->setName("After cuts");
   _plot->graph()->setBrush(QBrush(Qt::blue, Qt::Dense6Pattern));
   _plot->graph()->setLineStyle(QCPGraph::lsStepCenter);

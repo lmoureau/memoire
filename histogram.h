@@ -33,6 +33,16 @@ public:
 };
 
 template<typename _bin_type_>
+class out_of_range_discard
+{
+public:
+  typedef _bin_type_ bin_type;
+
+  void bin_overflow(bin_type) {}
+  void bin_underflow(bin_type) {}
+};
+
+template<typename _bin_type_>
 class out_of_range_record
 {
 public:
@@ -116,7 +126,7 @@ public:
   explicit basic_histogram(_axis_args_... args);
   virtual ~basic_histogram() {}
 
-  void bin(const binned_type &value) { bin(value, binned_type(1)); }
+  void bin(const binned_type &value) { bin(value, bin_type(1)); }
   void bin(const binned_type &value, const bin_type &weight);
 
   const_iterator begin() const { return _data.cbegin(); }
@@ -167,6 +177,73 @@ void basic_histogram<BASIC_HISTOGRAM_PARAMS>::bin(const binned_type &value,
 }
 
 typedef basic_histogram<double, double> histogram;
+
+template<typename _binned_type_1_, typename _binned_type_2_>
+class basic_bin2d
+{
+public:
+  using binned_type_1 = _binned_type_1_;
+  using binned_type_2 = _binned_type_2_;
+
+  binned_type_1 x;
+  binned_type_2 y;
+
+  explicit basic_bin2d(const binned_type_1 &x, const binned_type_2 &y) :
+    x(x), y(y)
+  {}
+};
+
+using bin2d = basic_bin2d<double, double>;
+
+template<
+  typename _axis_type_1_,
+  typename _axis_type_2_>
+class axis2d
+{
+public:
+  using axis_type_1 = _axis_type_1_;
+  using axis_type_2 = _axis_type_2_;
+  using bin_type = basic_bin2d<typename _axis_type_1_::axis_type,
+                               typename _axis_type_2_::axis_type>;
+
+  axis_type_1 x;
+  axis_type_2 y;
+
+public:
+  explicit axis2d(const axis_type_1 &axis1, const axis_type_2 &axis2) :
+    x(axis1), y(axis2)
+  {}
+
+  int bin_count() const { return x.bin_count() * y.bin_count(); }
+  int operator() (const bin_type &value);
+};
+
+template<typename _axis_type_1_, typename _axis_type_2_>
+int axis2d<_axis_type_1_, _axis_type_2_>::operator() (
+    const axis2d<_axis_type_1_, _axis_type_2_>::bin_type &value)
+{
+  return x(value.x) * y.bin_count() + x(value.y);
+}
+
+template<typename _out_of_range_type_1_, typename _out_of_range_type_2_>
+class out_of_range2d
+{};
+
+template<
+  typename _binned_type_1_,
+  typename _binned_type_2_,
+  typename _bin_type_,
+  typename _axis_type_1_ = linear_axis<_binned_type_1_>,
+  typename _axis_type_2_ = linear_axis<_binned_type_2_>,
+  typename _out_of_range_type_ = out_of_range_discard<_bin_type_>
+>
+using basic_histogram2d = basic_histogram<
+  basic_bin2d<_binned_type_1_, _binned_type_2_>,
+  _bin_type_,
+  axis2d<_axis_type_1_, _axis_type_2_>,
+  _out_of_range_type_>;
+
+using histogram2d = basic_histogram2d<double, double, double>;
 
 } // namespace hist
 

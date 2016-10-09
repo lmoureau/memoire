@@ -13,6 +13,8 @@ public:
   virtual ~parser() {}
 
   virtual bool end() = 0;
+  virtual bool has_gen() { return true; }
+  virtual bool has_rec() { return true; }
   virtual void read() = 0;
   virtual event rec() = 0;
   virtual event gen() = 0;
@@ -50,6 +52,7 @@ public:
   explicit root_parser(const std::string &filename);
 
   bool end();
+  bool has_rec();
   void read();
   event rec();
   event gen();

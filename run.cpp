@@ -16,8 +16,12 @@ void run::add_fill(const std::string &name,
 run::result run::operator() (parser *in)
 {
   for (in->read(); !in->end(); in->read()) {
-    process_gen_event(in->gen());
-    process_rec_event(in->rec());
+    if (in->has_gen()) {
+      process_gen_event(in->gen());
+    }
+    if (in->has_rec()) {
+      process_rec_event(in->rec());
+    }
   }
   result r;
   for (std::vector<fill>::const_iterator it = _fills.begin();

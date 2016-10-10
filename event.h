@@ -10,6 +10,9 @@ struct track
   int pdgid; ///< PDG
   int gpid;  ///< GEANT
   lorentz::vec p;
+  int matched = -1;
+
+  void match(const std::vector<track> &tracks);
 };
 
 struct event

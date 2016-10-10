@@ -75,6 +75,14 @@ int main(int argc, char **argv) {
     return pi.x() * pi.x() + pi.y() * pi.y();
   });
 
+  hist::linear_axis<double> match_axis = hist::linear_axis<double>(-0.5, 1.5, 20);
+  r.add_fill("match[pi+ = 0]", match_axis, [](const event &e) {
+    return e.tracks[0].matched < 0 ? 0 : e.tracks[0].matched;
+  });
+  r.add_fill("match[pi- = 1]", match_axis, [](const event &e) {
+    return e.tracks[1].matched < 0 ? 1 : e.tracks[1].matched;
+  });
+
   hist::histogram2d h2d(y_axis, eta_axis);
   h2d.bin(hist::bin2d(0, 0));
 

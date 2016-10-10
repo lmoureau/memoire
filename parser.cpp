@@ -178,8 +178,10 @@ void root_parser::read()
     _d->rec = event();
 
     trk.p = lorentz::vec::mxyz(.14, _d->rec_pxp, _d->rec_pyp, _d->rec_pzp);
+    trk.match(_d->gen.tracks);
     _d->rec.tracks.push_back(trk);
     trk.p = lorentz::vec::mxyz(.14, _d->rec_pxm, _d->rec_pym, _d->rec_pzm);
+    trk.match(_d->gen.tracks);
     _d->rec.tracks.push_back(trk);
   }
 }

@@ -25,9 +25,11 @@ void set_graph_data(QCPGraph *graph,
 
   typename histogram_type::const_iterator it = histogram.begin();
   typename histogram_type::const_iterator end = histogram.end();
+  graph->addData(axis.bin_center(-1), 0);
   for (int i = 0; it != end; ++it, ++i) {
     graph->addData(axis.bin_center(i), *it);
   }
+  graph->addData(axis.bin_center(axis.bin_count()), 0);
 }
 
 class histogram2d_plottable : public QCPAbstractPlottable

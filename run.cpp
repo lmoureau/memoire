@@ -58,11 +58,11 @@ void run::process_event(parser *in)
       gen_val = f.function(gen);
       f.before_cuts.bin(gen_val);
     }
-    if (has_rec) {
+    if (has_rec && passes_cuts) {
       rec_val = f.function(rec);
       f.after_cuts.bin(rec_val);
     }
-    if (has_gen && has_rec) {
+    if (has_gen && has_rec && passes_cuts) {
       f.migration.bin(hist::bin2d(gen_val, rec_val));
       // TODO fake, miss
     }

@@ -61,6 +61,26 @@ int main(int argc, char **argv) {
     return std::atanh(fake.z() / fake.t());
   });
 
+  r.add_fill("eta_pi[0]", eta_axis, [](const event &e) {
+    lorentz::vec pi = e.tracks[0].p;
+    lorentz::vec fake = lorentz::vec::mxyz(0, pi.x(), pi.y(), pi.z());
+    return std::atanh(fake.z() / fake.t());
+  });
+  r.add_fill("eta_pi[1]", eta_axis, [](const event &e) {
+    lorentz::vec pi = e.tracks[1].p;
+    lorentz::vec fake = lorentz::vec::mxyz(0, pi.x(), pi.y(), pi.z());
+    return std::atanh(fake.z() / fake.t());
+  });
+
+  r.add_fill("pt_pi[0]^2", pt_axis, [](const event &e) {
+    lorentz::vec pi = e.tracks[0].p;
+    return pi.x() * pi.x() + pi.y() * pi.y();
+  });
+  r.add_fill("pt_pi[1]^2", pt_axis, [](const event &e) {
+    lorentz::vec pi = e.tracks[1].p;
+    return pi.x() * pi.x() + pi.y() * pi.y();
+  });
+
   hist::histogram2d h2d(y_axis, eta_axis);
   h2d.bin(hist::bin2d(0, 0));
 

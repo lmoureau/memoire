@@ -134,6 +134,24 @@ vec vec::xyzt(double x, double y, double z, double t)
   return txyz(t, x, y, z);
 }
 
+inline double eta(const vec &v)
+{
+  lorentz::vec fake = lorentz::vec::mxyz(0, v.x(), v.y(), v.z());
+  return std::atanh(fake.z() / fake.t());
+}
+
+inline double phi(const vec &v)
+{
+  return std::atan2(v.y(), v.x());
+}
+
+inline double delta_r(const vec &v1, const vec &v2)
+{
+  double deta = eta(v1) - eta(v2);
+  double dphi = phi(v1) - phi(v2);
+  return std::sqrt(deta * deta + dphi * dphi);
+}
+
 } // namespace lorentz
 
 inline std::ostream &operator<<(std::ostream &out, const lorentz::vec &vec)

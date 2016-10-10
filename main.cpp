@@ -56,20 +56,14 @@ int main(int argc, char **argv) {
 
   hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-10, 10, 100);
   r.add_fill("eta", eta_axis, [](const event &e) {
-    lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
-    lorentz::vec fake = lorentz::vec::mxyz(0, rho.x(), rho.y(), rho.z());
-    return std::atanh(fake.z() / fake.t());
+    return lorentz::eta(e.tracks[0].p + e.tracks[1].p);
   });
 
   r.add_fill("eta_pi[0]", eta_axis, [](const event &e) {
-    lorentz::vec pi = e.tracks[0].p;
-    lorentz::vec fake = lorentz::vec::mxyz(0, pi.x(), pi.y(), pi.z());
-    return std::atanh(fake.z() / fake.t());
+    return lorentz::eta(e.tracks[0].p);
   });
   r.add_fill("eta_pi[1]", eta_axis, [](const event &e) {
-    lorentz::vec pi = e.tracks[1].p;
-    lorentz::vec fake = lorentz::vec::mxyz(0, pi.x(), pi.y(), pi.z());
-    return std::atanh(fake.z() / fake.t());
+    return lorentz::eta(e.tracks[1].p);
   });
 
   r.add_fill("pt_pi[0]^2", pt_axis, [](const event &e) {
@@ -92,10 +86,7 @@ int main(int argc, char **argv) {
   rc->add_cut("|eta(pi)| < 3", [](const event &e) {
     bool ok = true;
     for (int i = 0; i < 2; ++i) {
-      lorentz::vec fake = lorentz::vec::mxyz(0, e.tracks[i].p.x(),
-                                                e.tracks[i].p.y(),
-                                                e.tracks[i].p.z());
-      double eta = std::atanh(fake.z() / fake.t());
+      double eta = lorentz::eta(e.tracks[i].p);
       ok &= std::abs(eta) < 3;
     }
     return ok;

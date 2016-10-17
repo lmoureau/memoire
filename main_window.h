@@ -24,6 +24,7 @@ public:
 
 private slots:
   void refresh_results();
+  void save();
   void set_log_scale(bool log);
 };
 

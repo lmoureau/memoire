@@ -1,6 +1,7 @@
 #include "main_window.h"
 
 #include <QAction>
+#include <QFileDialog>
 #include <QSplitter>
 #include <QToolBar>
 #include <QToolButton>
@@ -45,7 +46,10 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
   addToolBar(tools);
   tools->setFloatable(false);
 
-  QAction *action = tools->addAction("Log scale");
+  QAction *action = tools->addAction(QIcon::fromTheme("document-save"), "Save");
+  connect(action, SIGNAL(triggered()), this, SLOT(save()));
+
+  action = tools->addAction("Log scale");
   action->setCheckable(true);
   connect(action, SIGNAL(toggled(bool)), this, SLOT(set_log_scale(bool)));
 }
@@ -106,6 +110,13 @@ void main_window::refresh_results()
   _plot->yAxis2->rescale();
 
   _plot->replot();
+}
+
+void main_window::save()
+{
+  QString filename = QFileDialog::getSaveFileName(
+    this, tr("Save plot"), _plots->currentItem()->text() + ".png", "*.png");
+  _plot->savePng(filename);
 }
 
 void main_window::set_log_scale(bool log)

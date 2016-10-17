@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     return 0.5 * std::log((rho.t() + rho.z()) / (rho.t() - rho.z()));
   });
 
-  hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-10, 10, 100);
+  hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-5, 5, 100);
   r.add_fill("eta", eta_axis, [](const event &e) {
     return lorentz::eta(e.tracks[0].p + e.tracks[1].p);
   });
@@ -78,13 +78,13 @@ int main(int argc, char **argv) {
     return lorentz::phi(e.tracks[1].p);
   });
 
-  r.add_fill("pt_pi[0]^2", pt_axis, [](const event &e) {
+  r.add_fill("pt_pi[0]", pt_axis, [](const event &e) {
     lorentz::vec pi = e.tracks[0].p;
-    return pi.x() * pi.x() + pi.y() * pi.y();
+    return std::sqrt(pi.x() * pi.x() + pi.y() * pi.y());
   });
-  r.add_fill("pt_pi[1]^2", pt_axis, [](const event &e) {
+  r.add_fill("pt_pi[1]", pt_axis, [](const event &e) {
     lorentz::vec pi = e.tracks[1].p;
-    return pi.x() * pi.x() + pi.y() * pi.y();
+    return std::sqrt(pi.x() * pi.x() + pi.y() * pi.y());
   });
 
   hist::linear_axis<double> match_axis = hist::linear_axis<double>(-0.5, 1.5, 20);
@@ -93,6 +93,34 @@ int main(int argc, char **argv) {
   });
   r.add_fill("match[pi- = 1]", match_axis, [](const event &e) {
     return e.tracks[1].matched < 0 ? 1 : e.tracks[1].matched;
+  });
+  r.add_fill("unique match", match_axis, [](const event &e) {
+    return e.tracks[0].matched == e.tracks[1].matched;
+  });
+
+  r.add_fill("eta[pi+ match]", eta_axis, [](const event &e) {
+    int match = e.tracks[0].matched;
+    if (match < 0) { // gen
+      return lorentz::eta(e.tracks[0].p);
+    }
+    for (unsigned i = 0; i < e.tracks.size(); ++i) {
+      if (e.tracks[i].matched == 0) {
+        return lorentz::eta(e.tracks[i].p);
+      }
+    }
+    return -10.;
+  });
+  r.add_fill("eta[pi- match]", eta_axis, [](const event &e) {
+    int match = e.tracks[0].matched;
+    if (match < 0) { // gen
+      return lorentz::eta(e.tracks[1].p);
+    }
+    for (unsigned i = 0; i < e.tracks.size(); ++i) {
+      if (e.tracks[i].matched == 1) {
+        return lorentz::eta(e.tracks[i].p);
+      }
+    }
+    return 10.;
   });
 
   hist::histogram2d h2d(y_axis, eta_axis);

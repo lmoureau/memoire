@@ -53,8 +53,8 @@ void histogram2d_plottable::draw(QCPPainter *painter)
     double lower_x = key_axis.bin_start(x);
     double upper_x = key_axis.bin_end(x);
     for (int y = 0; y < val_axis.bin_count(); ++y) {
-      double lower_y = key_axis.bin_start(y);
-      double upper_y = key_axis.bin_end(y);
+      double lower_y = val_axis.bin_start(y);
+      double upper_y = val_axis.bin_end(y);
       QPointF topLeft = coordsToPixels(lower_x, upper_y);
       QPointF bottomRight = coordsToPixels(upper_x, lower_y);
       QRectF rect(topLeft, bottomRight);

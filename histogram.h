@@ -222,7 +222,7 @@ template<typename _axis_type_1_, typename _axis_type_2_>
 int axis2d<_axis_type_1_, _axis_type_2_>::operator() (
     const axis2d<_axis_type_1_, _axis_type_2_>::bin_type &value)
 {
-  return x(value.x) * y.bin_count() + x(value.y);
+  return x(value.x) * y.bin_count() + y(value.y);
 }
 
 template<typename _out_of_range_type_1_, typename _out_of_range_type_2_>

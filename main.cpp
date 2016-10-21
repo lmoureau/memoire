@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     return lorentz::eta(e.tracks[1].p);
   });
 
-  hist::linear_axis<double> phi_axis = hist::linear_axis<double>(-3.1415, 3.1415, 180);
+  hist::linear_axis<double> phi_axis = hist::linear_axis<double>(-3.1415, 3.1415, 90);
   r.add_fill("phi", phi_axis, [](const event &e) {
     return lorentz::phi(e.tracks[0].p + e.tracks[1].p);
   });

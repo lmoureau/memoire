@@ -17,7 +17,7 @@ double get_mass(const event &e) {
 bool cut_pt(const event &e) {
   double pt2_1 = e.tracks[0].p.x() * e.tracks[0].p.x() + e.tracks[0].p.y() * e.tracks[0].p.y();
   double pt2_2 = e.tracks[1].p.x() * e.tracks[1].p.x() + e.tracks[1].p.y() * e.tracks[1].p.y();
-  return pt2_1 > .3 * .3 && pt2_2 > .3 * .3;
+  return pt2_1 > .2 * .2 && pt2_2 > .2 * .2;
 }
 
 bool cut_m_pi_pi(const event &e) {
@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 
   // Cuts
   run_config *rc = new run_config;
-  rc->add_cut("pt(pi) > 0.3", &cut_pt);
+  rc->add_cut("pt(pi) > 0.2", &cut_pt);
   rc->add_cut("M(pi pi) > 0.5", &cut_m_pi_pi);
   rc->add_cut("|eta(rho)| < 2.5", &cut_eta);
   rc->add_cut("|eta(pi)| < 3", [](const event &e) {

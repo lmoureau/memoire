@@ -21,7 +21,7 @@ bool cut_pt(const event &e) {
 }
 
 bool cut_m_pi_pi(const event &e) {
-  return (e.tracks[0].p + e.tracks[1].p).norm() > .5;
+  return e.p.norm() > .5;
 }
 
 int main(int argc, char **argv) {
@@ -37,8 +37,7 @@ int main(int argc, char **argv) {
 
   hist::linear_axis<double> pt_axis = hist::linear_axis<double>(0, 1, 100);
   r.add_fill("pt^2 ~= -t", pt_axis, [](const event &e) {
-    lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
-    return rho.x() * rho.x() + rho.y() * rho.y();
+    return e.p.x() * e.p.x() + e.p.y() * e.p.y();
   });
 
   hist::linear_axis<double> energy_axis = hist::linear_axis<double>(0, 2, 100);
@@ -51,7 +50,7 @@ int main(int argc, char **argv) {
 
   hist::linear_axis<double> y_axis = hist::linear_axis<double>(-10, 10, 100);
   r.add_fill("y", y_axis, [](const event &e) {
-    return lorentz::rapidity(e.tracks[0].p + e.tracks[1].p);
+    return lorentz::rapidity(e.p);
   });
   r.add_fill("y_pi[0]", y_axis, [](const event &e) {
     return lorentz::rapidity(e.tracks[0].p);
@@ -62,7 +61,7 @@ int main(int argc, char **argv) {
 
   hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-5, 5, 100);
   r.add_fill("eta", eta_axis, [](const event &e) {
-    return lorentz::eta(e.tracks[0].p + e.tracks[1].p);
+    return lorentz::eta(e.p);
   });
 
   r.add_fill("eta_pi[0]", eta_axis, [](const event &e) {
@@ -74,7 +73,7 @@ int main(int argc, char **argv) {
 
   hist::linear_axis<double> phi_axis = hist::linear_axis<double>(-3.1415, 3.1415, 90);
   r.add_fill("phi", phi_axis, [](const event &e) {
-    return lorentz::phi(e.tracks[0].p + e.tracks[1].p);
+    return lorentz::phi(e.p);
   });
 
   r.add_fill("phi_pi[0]", phi_axis, [](const event &e) {

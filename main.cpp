@@ -147,11 +147,11 @@ int main(int argc, char **argv) {
   run_config *rc = new run_config;
   rc->add_cut("pt(pi) > 0.2", &cut_pt);
   rc->add_cut("M(pi pi) > 0.5", &cut_m_pi_pi);
-  rc->add_cut("|eta(pi)| < 3", [](const event &e) {
+  rc->add_cut("|eta(pi)| < 2.4", [](const event &e) {
     bool ok = true;
     for (int i = 0; i < 2; ++i) {
       double eta = lorentz::eta(e.tracks[i].p);
-      ok &= std::abs(eta) < 3;
+      ok &= std::abs(eta) < 2.4;
     }
     return ok;
   });

@@ -24,13 +24,6 @@ bool cut_m_pi_pi(const event &e) {
   return (e.tracks[0].p + e.tracks[1].p).norm() > .5;
 }
 
-bool cut_eta(const event &e) {
-  lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;
-  lorentz::vec fake = lorentz::vec::mxyz(0, rho.x(), rho.y(), rho.z());
-  double eta = std::atanh(fake.z() / fake.t());
-  return std::abs(eta) < 2.5;
-}
-
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
 
@@ -154,7 +147,6 @@ int main(int argc, char **argv) {
   run_config *rc = new run_config;
   rc->add_cut("pt(pi) > 0.2", &cut_pt);
   rc->add_cut("M(pi pi) > 0.5", &cut_m_pi_pi);
-  rc->add_cut("|eta(rho)| < 2.5", &cut_eta);
   rc->add_cut("|eta(pi)| < 3", [](const event &e) {
     bool ok = true;
     for (int i = 0; i < 2; ++i) {

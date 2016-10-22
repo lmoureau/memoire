@@ -6,6 +6,9 @@
 #include <TFile.h>
 #include <TTree.h>
 
+#define MASS 0.13957018 // pion
+//#define MASS 0.493677 // kaon
+
 starlight_parser::starlight_parser(const std::string &filename) :
   _filename(filename),
   _in(filename)
@@ -70,7 +73,7 @@ void starlight_parser::read()
     double px = read_double(_in);
     double py = read_double(_in);
     double pz = read_double(_in);
-    trk.p = lorentz::vec::mxyz(.14, px, py, pz);
+    trk.p = lorentz::vec::mxyz(MASS, px, py, pz);
     _in >> itrash /* event number */ >> itrash /* starting vertex */
          >> itrash /* ending vertex */;
     _in >> trk.pdgid;
@@ -166,9 +169,9 @@ void root_parser::read()
   _d->gen = event();
 
   track trk;
-  trk.p = lorentz::vec::mxyz(.14, _d->gen_pxp, _d->gen_pyp, _d->gen_pzp);
+  trk.p = lorentz::vec::mxyz(MASS, _d->gen_pxp, _d->gen_pyp, _d->gen_pzp);
   _d->gen.add_track(trk);
-  trk.p = lorentz::vec::mxyz(.14, _d->gen_pxm, _d->gen_pym, _d->gen_pzm);
+  trk.p = lorentz::vec::mxyz(MASS, _d->gen_pxm, _d->gen_pym, _d->gen_pzm);
   _d->gen.add_track(trk);
 
   if (_d->rec_i < _d->gen_i) {
@@ -177,10 +180,10 @@ void root_parser::read()
   if (_d->rec_i == _d->gen_i) {
     _d->rec = event();
 
-    trk.p = lorentz::vec::mxyz(.14, _d->rec_pxp, _d->rec_pyp, _d->rec_pzp);
+    trk.p = lorentz::vec::mxyz(MASS, _d->rec_pxp, _d->rec_pyp, _d->rec_pzp);
     trk.match(_d->gen.tracks);
     _d->rec.add_track(trk);
-    trk.p = lorentz::vec::mxyz(.14, _d->rec_pxm, _d->rec_pym, _d->rec_pzm);
+    trk.p = lorentz::vec::mxyz(MASS, _d->rec_pxm, _d->rec_pym, _d->rec_pzm);
     trk.match(_d->gen.tracks);
     _d->rec.add_track(trk);
   }

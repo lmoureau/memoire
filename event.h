@@ -19,6 +19,9 @@ struct event
 {
   int id;
   std::vector<track> tracks;
+  lorentz::vec p;
+
+  void add_track(const track &t);
 };
 
 #endif // EVENT_H

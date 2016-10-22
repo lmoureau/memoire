@@ -10,3 +10,9 @@ void track::match(const std::vector<track> &tracks)
     });
   matched = std::distance(tracks.begin(), it);
 }
+
+void event::add_track(const track& t)
+{
+  p += t.p;
+  tracks.push_back(t);
+}

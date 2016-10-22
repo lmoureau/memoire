@@ -150,6 +150,16 @@ inline double spatial_norm(const vec &v)
   return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
 }
 
+inline double pt2(const vec &v)
+{
+  return v.x() * v.x() + v.y() * v.y();
+}
+
+inline double pt(const vec &v)
+{
+  return std::sqrt(pt2(v));
+}
+
 inline double phi(const vec &v)
 {
   return std::atan2(v.y(), v.x());

@@ -86,6 +86,20 @@ int main(int argc, char **argv) {
     lorentz::vec pi = e.tracks[1].p;
     return std::sqrt(pi.x() * pi.x() + pi.y() * pi.y());
   });
+  r.add_fill("pt_pi[max]", pt_axis, [](const event &e) {
+    lorentz::vec pi0 = e.tracks[0].p;
+    lorentz::vec pi1 = e.tracks[1].p;
+    double pt0 = std::sqrt(pi0.x() * pi0.x() + pi0.y() * pi0.y());
+    double pt1 = std::sqrt(pi1.x() * pi1.x() + pi1.y() * pi1.y());
+    return std::max(pt0, pt1);
+  });
+  r.add_fill("pt_pi[min]", pt_axis, [](const event &e) {
+    lorentz::vec pi0 = e.tracks[0].p;
+    lorentz::vec pi1 = e.tracks[1].p;
+    double pt0 = std::sqrt(pi0.x() * pi0.x() + pi0.y() * pi0.y());
+    double pt1 = std::sqrt(pi1.x() * pi1.x() + pi1.y() * pi1.y());
+    return std::min(pt0, pt1);
+  });
 
   hist::linear_axis<double> match_axis = hist::linear_axis<double>(-0.5, 1.5, 20);
   r.add_fill("match[pi+ = 0]", match_axis, [](const event &e) {

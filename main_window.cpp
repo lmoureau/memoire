@@ -16,7 +16,7 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
   _plots(new QListWidget),
   _log_scale(false)
 {
-  setWindowTitle("He He");
+  setWindowTitle("Li He");
 
   _plot->setAutoAddPlottableToLegend(true);
   _plot->legend->setVisible(true);

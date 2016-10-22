@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     }
     return ok;
   });
-  rc->add_cut("|y(pi)| > 2", [](const event &e) {
+  rc->add_cut("|y(pi)| > 2", false, [](const event &e) {
     bool ok = true;
     for (int i = 0; i < 2; ++i) {
       double y = lorentz::rapidity(e.tracks[i].p);

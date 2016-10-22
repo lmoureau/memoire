@@ -81,7 +81,7 @@ void main_window::show_plot(int index)
   for (const auto &element : _result.histos) {
     plot_names << element.first.c_str();
   }
-  std::string name = plot_names[index].toLatin1().data();
+  std::string name = plot_names[index < 0 ? 0 : index].toLatin1().data();
 
   _plot->clearPlottables();
 

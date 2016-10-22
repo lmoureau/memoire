@@ -48,6 +48,13 @@ int main(int argc, char **argv) {
     return rho.x() * rho.x() + rho.y() * rho.y();
   });
 
+  hist::linear_axis<double> energy_axis = hist::linear_axis<double>(0, 2, 100);
+  r.add_fill("E_pi[0]", energy_axis, [](const event &e) {
+    return e.tracks[0].p.t();
+  });
+  r.add_fill("E_pi[1]", energy_axis, [](const event &e) {
+    return e.tracks[1].p.t();
+  });
   hist::linear_axis<double> y_axis = hist::linear_axis<double>(-10, 10, 100);
   r.add_fill("y", y_axis, [](const event &e) {
     lorentz::vec rho = e.tracks[0].p + e.tracks[1].p;

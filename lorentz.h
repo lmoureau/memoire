@@ -140,6 +140,16 @@ inline double eta(const vec &v)
   return std::atanh(fake.z() / fake.t());
 }
 
+inline double rapidity(const vec &v)
+{
+  return 0.5 * std::log((v.t() + v.z()) / (v.t() - v.z()));
+}
+
+inline double spatial_norm(const vec &v)
+{
+  return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
+}
+
 inline double phi(const vec &v)
 {
   return std::atan2(v.y(), v.x());

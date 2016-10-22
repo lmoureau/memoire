@@ -55,6 +55,8 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
 
 void main_window::refresh_results()
 {
+  setCursor(Qt::WaitCursor);
+
   run r = _basic_run;
   _config->fill_run(r);
   _parser->reset();
@@ -73,6 +75,8 @@ void main_window::refresh_results()
   _plots->blockSignals(false);
 
   show_plot(selected);
+
+  setCursor(Qt::ArrowCursor);
 }
 
 void main_window::show_plot(int index)

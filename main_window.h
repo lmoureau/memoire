@@ -13,6 +13,7 @@ class main_window : public QMainWindow
   Q_OBJECT
 
   run _basic_run;
+  run::result _result;
   run_config *_config;
   parser *_parser;
   QCustomPlot *_plot;
@@ -24,6 +25,7 @@ public:
 
 private slots:
   void refresh_results();
+  void show_plot(int index);
   void save();
   void set_log_scale(bool log);
 };

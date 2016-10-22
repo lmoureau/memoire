@@ -32,8 +32,7 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
 
   refresh_results();
   connect(_config, SIGNAL(config_changed()), this, SLOT(refresh_results()));
-  connect(_plots, SIGNAL(currentRowChanged(int)),
-          this, SLOT(refresh_results()));
+  connect(_plots, SIGNAL(currentRowChanged(int)), this, SLOT(show_plot(int)));
 
   QSplitter *splitter = new QSplitter(Qt::Horizontal);
   splitter->addWidget(_config);
@@ -59,10 +58,10 @@ void main_window::refresh_results()
   run r = _basic_run;
   _config->fill_run(r);
   _parser->reset();
-  run::result result = r(_parser);
+  _result = r(_parser);
 
   QStringList plot_names;
-  for (const auto &element : result.histos) {
+  for (const auto &element : _result.histos) {
     plot_names << element.first.c_str();
   }
   int selected = _plots->currentRow();
@@ -73,7 +72,16 @@ void main_window::refresh_results()
   _plots->setCurrentRow(selected);
   _plots->blockSignals(false);
 
-  std::string name = plot_names[selected].toLatin1().data();
+  show_plot(selected);
+}
+
+void main_window::show_plot(int index)
+{
+  QStringList plot_names;
+  for (const auto &element : _result.histos) {
+    plot_names << element.first.c_str();
+  }
+  std::string name = plot_names[index].toLatin1().data();
 
   _plot->clearPlottables();
 
@@ -81,20 +89,20 @@ void main_window::refresh_results()
       new hist::qt::histogram2d_plottable(
         _plot->xAxis,
         _plot->yAxis2,
-        result.histos.at(name).migration);
+        _result.histos.at(name).migration);
   migration->setName("Migration matrix");
   migration->setBrush(QBrush(Qt::darkGreen));
   _plot->addPlottable(migration);
 
   _plot->addGraph();
   hist::qt::set_graph_data(_plot->graph(),
-                           result.histos.at(name).before_cuts);
+                           _result.histos.at(name).before_cuts);
   _plot->graph()->setName("Before cuts");
   _plot->graph()->setLineStyle(QCPGraph::lsStepCenter);
 
   _plot->addGraph();
   hist::qt::set_graph_data(_plot->graph(),
-                           result.histos.at(name).after_cuts);
+                           _result.histos.at(name).after_cuts);
   _plot->graph()->setName("After cuts");
   _plot->graph()->setBrush(QBrush(Qt::blue, Qt::Dense6Pattern));
   _plot->graph()->setLineStyle(QCPGraph::lsStepCenter);

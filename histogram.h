@@ -1,6 +1,7 @@
 #ifndef HISTOGRAM_H
 #define HISTOGRAM_H
 
+#include <cmath>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -23,7 +24,7 @@ public:
                        int bin_count);
 
   int operator() (const axis_type &data) const
-  { return (data - _begin) / _bin_width; }
+  { return std::floor((data - _begin) / _bin_width); }
 
   int bin_count() const { return (_end - _begin) / _bin_width; }
   axis_type bin_end(int bin) const { return _begin + bin * _bin_width; }

@@ -150,6 +150,14 @@ int main(int argc, char **argv) {
     }
     return ok;
   });
+  rc->add_cut("|y(pi)| > 2", [](const event &e) {
+    bool ok = true;
+    for (int i = 0; i < 2; ++i) {
+      double y = lorentz::rapidity(e.tracks[i].p);
+      ok &= std::abs(y) > 2;
+    }
+    return ok;
+  });
 
   root_parser rparser("/user/lmoureaux/memoire/build/pipiv_GR_pipi_m_pt_y.root");
 

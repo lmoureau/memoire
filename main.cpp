@@ -10,18 +10,6 @@
 #include "run.h"
 #include "run_config.h"
 
-double get_mass(const event &e) {
-  return (e.tracks[0].p + e.tracks[1].p).norm();
-}
-
-bool cut_pt(const event &e) {
-  return lorentz::pt(e.tracks[0].p) > .2 && lorentz::pt(e.tracks[1].p) > .2;
-}
-
-bool cut_m_pi_pi(const event &e) {
-  return e.p.norm() > .5;
-}
-
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
 
@@ -31,7 +19,9 @@ int main(int argc, char **argv) {
   // Histograms
   run r;
   hist::linear_axis<double> mass_axis = hist::linear_axis<double>(0, 1.5, 75);
-  r.add_fill("mass", mass_axis, &get_mass);
+  r.add_fill("mass", mass_axis, [](const event &e) {
+    return e.p.norm();
+  });
 
   hist::linear_axis<double> pt_axis = hist::linear_axis<double>(0, 1, 100);
   r.add_fill("pt^2 ~= -t", pt_axis, [](const event &e) {
@@ -132,8 +122,12 @@ int main(int argc, char **argv) {
 
   // Cuts
   run_config *rc = new run_config;
-  rc->add_cut("pt(pi) > 0.2", &cut_pt);
-  rc->add_cut("M(pi pi) > 0.5", &cut_m_pi_pi);
+  rc->add_cut("pt(pi) > 0.2", [](const event &e) {
+    return lorentz::pt(e.tracks[0].p) > .2 && lorentz::pt(e.tracks[1].p) > .2;
+  });
+  rc->add_cut("M(pi pi) > 0.5", [](const event &e) {
+    return e.p.norm() > .5;
+  });
   rc->add_cut("|eta(pi)| < 2.4", [](const event &e) {
     bool ok = true;
     for (int i = 0; i < 2; ++i) {

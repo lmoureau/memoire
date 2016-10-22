@@ -15,9 +15,7 @@ double get_mass(const event &e) {
 }
 
 bool cut_pt(const event &e) {
-  double pt2_1 = e.tracks[0].p.x() * e.tracks[0].p.x() + e.tracks[0].p.y() * e.tracks[0].p.y();
-  double pt2_2 = e.tracks[1].p.x() * e.tracks[1].p.x() + e.tracks[1].p.y() * e.tracks[1].p.y();
-  return pt2_1 > .2 * .2 && pt2_2 > .2 * .2;
+  return lorentz::pt(e.tracks[0].p) > .2 && lorentz::pt(e.tracks[1].p) > .2;
 }
 
 bool cut_m_pi_pi(const event &e) {
@@ -37,7 +35,7 @@ int main(int argc, char **argv) {
 
   hist::linear_axis<double> pt_axis = hist::linear_axis<double>(0, 1, 100);
   r.add_fill("pt^2 ~= -t", pt_axis, [](const event &e) {
-    return e.p.x() * e.p.x() + e.p.y() * e.p.y();
+    return lorentz::pt2(e.p);
   });
 
   hist::linear_axis<double> energy_axis = hist::linear_axis<double>(0, 2, 100);
@@ -84,26 +82,16 @@ int main(int argc, char **argv) {
   });
 
   r.add_fill("pt_pi[0]", pt_axis, [](const event &e) {
-    lorentz::vec pi = e.tracks[0].p;
-    return std::sqrt(pi.x() * pi.x() + pi.y() * pi.y());
+    return lorentz::pt(e.tracks[0].p);
   });
   r.add_fill("pt_pi[1]", pt_axis, [](const event &e) {
-    lorentz::vec pi = e.tracks[1].p;
-    return std::sqrt(pi.x() * pi.x() + pi.y() * pi.y());
+    return lorentz::pt(e.tracks[1].p);
   });
   r.add_fill("pt_pi[max]", pt_axis, [](const event &e) {
-    lorentz::vec pi0 = e.tracks[0].p;
-    lorentz::vec pi1 = e.tracks[1].p;
-    double pt0 = std::sqrt(pi0.x() * pi0.x() + pi0.y() * pi0.y());
-    double pt1 = std::sqrt(pi1.x() * pi1.x() + pi1.y() * pi1.y());
-    return std::max(pt0, pt1);
+    return std::max(lorentz::pt(e.tracks[0].p), lorentz::pt(e.tracks[0].p));
   });
   r.add_fill("pt_pi[min]", pt_axis, [](const event &e) {
-    lorentz::vec pi0 = e.tracks[0].p;
-    lorentz::vec pi1 = e.tracks[1].p;
-    double pt0 = std::sqrt(pi0.x() * pi0.x() + pi0.y() * pi0.y());
-    double pt1 = std::sqrt(pi1.x() * pi1.x() + pi1.y() * pi1.y());
-    return std::min(pt0, pt1);
+    return std::min(lorentz::pt(e.tracks[0].p), lorentz::pt(e.tracks[0].p));
   });
 
   hist::linear_axis<double> match_axis = hist::linear_axis<double>(-0.5, 1.5, 20);

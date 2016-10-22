@@ -10,9 +10,14 @@ run_config::run_config(QWidget *parent) :
 
 void run_config::add_cut(const std::string &name, run::cut_fct cut)
 {
-  _cuts.push_back(cut_info{name, cut, true});
+  add_cut(name, true, cut);
+}
+
+void run_config::add_cut(const std::string &name, bool enable, run::cut_fct cut)
+{
+  _cuts.push_back(cut_info{name, cut, enable});
   QListWidgetItem *item = new QListWidgetItem(name.c_str(), this);
-  item->setCheckState(Qt::Checked);
+  item->setCheckState(enable ? Qt::Checked : Qt::Unchecked);
   item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
   emit config_changed();
 }

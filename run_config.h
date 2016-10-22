@@ -24,6 +24,7 @@ public:
   explicit run_config(QWidget *parent = 0);
 
   void add_cut(const std::string &name, run::cut_fct cut);
+  void add_cut(const std::string &name, bool enable, run::cut_fct cut);
   void fill_run(run &r) const;
 
 signals:

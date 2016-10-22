@@ -137,9 +137,6 @@ int main(int argc, char **argv) {
     return 10.;
   });
 
-  hist::histogram2d h2d(y_axis, eta_axis);
-  h2d.bin(hist::bin2d(0, 0));
-
   // Cuts
   run_config *rc = new run_config;
   rc->add_cut("pt(pi) > 0.2", &cut_pt);

@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     return lorentz::rapidity(e.tracks[1].p);
   });
 
-  hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-5, 5, 100);
+  hist::linear_axis<double> eta_axis = hist::linear_axis<double>(-10, 10, 100);
   r.add_fill("eta", eta_axis, [](const event &e) {
     return lorentz::eta(e.p);
   });

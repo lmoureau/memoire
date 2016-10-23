@@ -48,9 +48,23 @@ main_window::main_window(run basic_run, run_config *rc, parser *in) :
   QAction *action = tools->addAction(QIcon::fromTheme("document-save"), "Save");
   connect(action, SIGNAL(triggered()), this, SLOT(save()));
 
+  action = tools->addAction(QIcon::fromTheme("document-export"), "Save Data");
+  connect(action, SIGNAL(triggered()), this, SLOT(save_data()));
+
   action = tools->addAction("Log scale");
   action->setCheckable(true);
   connect(action, SIGNAL(toggled(bool)), this, SLOT(set_log_scale(bool)));
+}
+
+std::string main_window::current_plot_name() const
+{
+  QStringList plot_names;
+  for (const auto &element : _result.histos) {
+    plot_names << element.first.c_str();
+  }
+  int selected = _plots->currentRow();
+  selected = selected < 0 ? 0 : selected;
+  return plot_names[selected < 0 ? 0 : selected].toLatin1().data();
 }
 
 void main_window::refresh_results()
@@ -81,11 +95,7 @@ void main_window::refresh_results()
 
 void main_window::show_plot(int index)
 {
-  QStringList plot_names;
-  for (const auto &element : _result.histos) {
-    plot_names << element.first.c_str();
-  }
-  std::string name = plot_names[index < 0 ? 0 : index].toLatin1().data();
+  std::string name = current_plot_name();
 
   _plot->clearPlottables();
 
@@ -128,7 +138,29 @@ void main_window::save()
 {
   QString filename = QFileDialog::getSaveFileName(
     this, tr("Save plot"), _plots->currentItem()->text() + ".png", "*.png");
-  _plot->savePng(filename);
+  if (!filename.isEmpty()) {
+    _plot->savePng(filename);
+  }
+}
+
+void main_window::save_data()
+{
+  QString filename = QFileDialog::getSaveFileName(
+    this, tr("Save plot"), _plots->currentItem()->text() + ".dat", "*.*");
+  if (!filename.isEmpty()) {
+    std::string name = current_plot_name();
+    std::ofstream out(filename.toUtf8().data());
+    hist::histogram histogram = _result.histos.at(name).after_cuts;
+
+    const auto axis = histogram.axis();
+
+    auto it = histogram.begin();
+    auto end = histogram.end();
+    for (int i = 0; it != end; ++it, ++i) {
+      out << axis.bin_center(i) << " " << *it << "\n";
+    }
+    out.close();
+  }
 }
 
 void main_window::set_log_scale(bool log)

@@ -24,9 +24,12 @@ public:
   explicit main_window(run basic_run, run_config *rc, parser *in);
 
 private slots:
+  std::string current_plot_name() const;
+
   void refresh_results();
   void show_plot(int index);
   void save();
+  void save_data();
   void set_log_scale(bool log);
 };
 

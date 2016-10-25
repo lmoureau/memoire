@@ -27,6 +27,9 @@ int main(int argc, char **argv) {
   r.add_fill("pt^2 ~= -t", pt_axis, [](const event &e) {
     return lorentz::pt2(e.p);
   });
+  r.add_fill("pt", pt_axis, [](const event &e) {
+    return lorentz::pt(e.p);
+  });
 
   hist::linear_axis<double> energy_axis = hist::linear_axis<double>(0, 2, 100);
   r.add_fill("E_pi[0]", energy_axis, [](const event &e) {

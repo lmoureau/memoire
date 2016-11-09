@@ -125,6 +125,12 @@ int main(int argc, char **argv) {
 
   // Cuts
   run_config *rc = new run_config;
+  rc->add_cut("2 tracks", [](const event &e) {
+    return e.tracks.size() == 2;
+  });
+  rc->add_cut("4 tracks", false, [](const event &e) {
+    return e.tracks.size() == 4;
+  });
   rc->add_cut("pt(pi) > 0.2", [](const event &e) {
     return lorentz::pt(e.tracks[0].p) > .2 && lorentz::pt(e.tracks[1].p) > .2;
   });

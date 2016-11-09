@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <numeric>
 
 #include <QApplication>
 
@@ -130,6 +131,10 @@ int main(int argc, char **argv) {
   });
   rc->add_cut("4 tracks", false, [](const event &e) {
     return e.tracks.size() == 4;
+  });
+  rc->add_cut("neutral event", [](const event &e) {
+    return 0 == std::accumulate(e.tracks.cbegin(), e.tracks.cend(), 0,
+      [](int charge, const track &t) { return charge + t.charge; });
   });
   rc->add_cut("pt(pi) > 0.2", [](const event &e) {
     return lorentz::pt(e.tracks[0].p) > .2 && lorentz::pt(e.tracks[1].p) > .2;

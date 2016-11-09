@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
   // Histograms
   run r;
-  hist::linear_axis<double> mass_axis = hist::linear_axis<double>(0, 1.5, 75);
+  hist::linear_axis<double> mass_axis = hist::linear_axis<double>(0, 4, 200);
   r.add_fill("mass", mass_axis, [](const event &e) {
     return e.p.norm();
   });

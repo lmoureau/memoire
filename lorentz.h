@@ -54,6 +54,9 @@ public:
   inline static vec txyz(double t, double x, double y, double z);
   /// Constructs a 4-vector with the given temporal and spatial components
   inline static vec xyzt(double x, double y, double z, double t);
+  /// Constructs a 4-vector with the given temporal and spatial components
+  /// (given in spherical coordinates)
+  inline static vec m_r_phi_theta(double m, double r, double phi, double theta);
 };
 
 vec vec::operator-() const
@@ -133,6 +136,15 @@ vec vec::xyzt(double x, double y, double z, double t)
 {
   return txyz(t, x, y, z);
 }
+
+vec vec::m_r_phi_theta(double m, double r, double phi, double theta)
+{
+  return mxyz(m,
+              r * std::cos(theta) * std::cos(phi),
+              r * std::cos(theta) * std::sin(phi),
+              r * std::sin(theta));
+}
+
 
 inline double eta(const vec &v)
 {

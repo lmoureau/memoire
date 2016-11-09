@@ -59,4 +59,23 @@ public:
   void reset();
 };
 
+class hlt_parser : public parser
+{
+  std::string _filename;
+  struct data;
+  std::shared_ptr<data> _d;
+
+private:
+  hlt_parser(const hlt_parser &) {}
+
+public:
+  explicit hlt_parser(const std::string &filename);
+
+  bool end();
+  void read();
+  event rec();
+  event gen();
+  void reset();
+};
+
 #endif // PARSER_H

@@ -211,3 +211,70 @@ void root_parser::reset()
   _d->current_rec = 0;
   _d->rec_i = -1;
 }
+
+struct hlt_parser::data
+{
+  TFile *file;
+  TTree *tree;
+  long count, current;
+  event rec;
+
+  const static int BIG_TRACK_COUNT = 1000;
+
+  int ntracks;
+  double lambda[BIG_TRACK_COUNT];
+  double p[BIG_TRACK_COUNT];
+  double phi[BIG_TRACK_COUNT];
+  double qoverp[BIG_TRACK_COUNT];
+};
+
+hlt_parser::hlt_parser(const std::string &filename) :
+  _filename(filename),
+  _d(new data)
+{
+  // Trees: rho_gen, rho_rec
+  _d->file = new TFile(filename.c_str());
+  _d->file->GetObject("generalTracksTree", _d->tree);
+  _d->count = _d->tree->GetEntries();
+  reset();
+
+  _d->tree->SetBranchAddress("nTracks", &_d->ntracks);
+  _d->tree->SetBranchAddress("lambda", &_d->lambda);
+  _d->tree->SetBranchAddress("p", &_d->p);
+  _d->tree->SetBranchAddress("qoverp", &_d->qoverp);
+  _d->tree->SetBranchAddress("phi", &_d->phi);
+}
+
+bool hlt_parser::end()
+{
+  return _d->current >= _d->count;
+}
+
+void hlt_parser::read()
+{
+  _d->tree->GetEntry(_d->current++);
+  _d->rec = event();
+
+  for (int i = 0; i < _d->ntracks; ++i) {
+    track trk;
+    trk.p = lorentz::vec::m_r_phi_theta(MASS, _d->p[i],
+                                        _d->phi[i], _d->lambda[i]);
+    trk.charge = _d->qoverp[i] > 0 ? 1 : -1;
+    _d->rec.add_track(trk);
+  }
+}
+
+event hlt_parser::gen()
+{
+  return _d->rec;
+}
+
+event hlt_parser::rec()
+{
+  return _d->rec;
+}
+
+void hlt_parser::reset()
+{
+  _d->current = 0;
+}

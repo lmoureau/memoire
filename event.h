@@ -10,6 +10,7 @@ struct track
   int pdgid; ///< PDG
   int gpid;  ///< GEANT
   lorentz::vec p;
+  int charge;
   int matched = -1;
 
   void match(const std::vector<track> &tracks);

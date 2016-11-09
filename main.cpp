@@ -136,6 +136,27 @@ int main(int argc, char **argv) {
     return 0 == std::accumulate(e.tracks.cbegin(), e.tracks.cend(), 0,
       [](int charge, const track &t) { return charge + t.charge; });
   });
+  rc->add_cut("2 tracks with |M - 775| < 100", false, [](const event &e) {
+    for (auto &t1 : e.tracks) {
+      for (auto &t2 : e.tracks) {
+        if (std::abs((t1.p + t2.p).norm() - 0.775) < 0.1) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+  rc->add_cut("2 tracks with |M - 775| < 100, neutral", false, [](const event &e) {
+    for (auto &t1 : e.tracks) {
+      for (auto &t2 : e.tracks) {
+        if (std::abs((t1.p + t2.p).norm() - 0.775) < 0.1 &&
+            t1.charge + t2.charge == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
   rc->add_cut("pt(pi) > 0.2", [](const event &e) {
     return lorentz::pt(e.tracks[0].p) > .2 && lorentz::pt(e.tracks[1].p) > .2;
   });

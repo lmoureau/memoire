@@ -215,14 +215,16 @@ void root_parser::reset()
 struct hlt_parser::data
 {
   TFile *file;
-  TTree *tree;
+  TTree *tracks_tree;
   long count, current;
   event rec;
 
   const static int BIG_TRACK_COUNT = 1000;
 
   int ntracks;
+  double chi2[BIG_TRACK_COUNT];
   double lambda[BIG_TRACK_COUNT];
+  int    ndof[BIG_TRACK_COUNT];
   double p[BIG_TRACK_COUNT];
   double phi[BIG_TRACK_COUNT];
   double qoverp[BIG_TRACK_COUNT];
@@ -234,15 +236,17 @@ hlt_parser::hlt_parser(const std::string &filename) :
 {
   // Trees: rho_gen, rho_rec
   _d->file = new TFile(filename.c_str());
-  _d->file->GetObject("generalTracksTree", _d->tree);
-  _d->count = _d->tree->GetEntries();
+  _d->file->GetObject("generalTracksTree", _d->tracks_tree);
+  _d->count = _d->tracks_tree->GetEntries();
   reset();
 
-  _d->tree->SetBranchAddress("nTracks", &_d->ntracks);
-  _d->tree->SetBranchAddress("lambda", &_d->lambda);
-  _d->tree->SetBranchAddress("p", &_d->p);
-  _d->tree->SetBranchAddress("qoverp", &_d->qoverp);
-  _d->tree->SetBranchAddress("phi", &_d->phi);
+  _d->tracks_tree->SetBranchAddress("nTracks", &_d->ntracks);
+  _d->tracks_tree->SetBranchAddress("chi2", &_d->chi2);
+  _d->tracks_tree->SetBranchAddress("lambda", &_d->lambda);
+  _d->tracks_tree->SetBranchAddress("ndof", &_d->ndof);
+  _d->tracks_tree->SetBranchAddress("p", &_d->p);
+  _d->tracks_tree->SetBranchAddress("qoverp", &_d->qoverp);
+  _d->tracks_tree->SetBranchAddress("phi", &_d->phi);
 }
 
 bool hlt_parser::end()
@@ -252,7 +256,7 @@ bool hlt_parser::end()
 
 void hlt_parser::read()
 {
-  _d->tree->GetEntry(_d->current++);
+  _d->tracks_tree->GetEntry(_d->current++);
   _d->rec = event();
 
   for (int i = 0; i < _d->ntracks; ++i) {
@@ -260,6 +264,8 @@ void hlt_parser::read()
     trk.p = lorentz::vec::m_r_phi_theta(MASS, _d->p[i],
                                         _d->phi[i], _d->lambda[i]);
     trk.charge = _d->qoverp[i] > 0 ? 1 : -1;
+    trk.chi2 = _d->chi2[i];
+    trk.ndof = _d->ndof[i];
     _d->rec.add_track(trk);
   }
 }

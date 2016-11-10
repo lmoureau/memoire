@@ -12,6 +12,8 @@ struct track
   lorentz::vec p;
   int charge;
   int matched = -1;
+  double chi2;
+  int ndof;
 
   void match(const std::vector<track> &tracks);
 };

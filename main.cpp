@@ -124,6 +124,14 @@ int main(int argc, char **argv) {
     return 10.;
   });
 
+  hist::linear_axis<double> chi2_axis = hist::linear_axis<double>(0, 15, 100);
+  r.add_fill("chi2/ndof[0]", chi2_axis, [](const event &e) {
+    return e.tracks[0].chi2 / e.tracks[0].ndof;
+  });
+  r.add_fill("chi2/ndof[1]", chi2_axis, [](const event &e) {
+    return e.tracks[1].chi2 / e.tracks[1].ndof;
+  });
+
   // Cuts
   run_config *rc = new run_config;
   rc->add_cut("2 tracks", [](const event &e) {
@@ -156,6 +164,11 @@ int main(int argc, char **argv) {
       }
     }
     return false;
+  });
+  rc->add_cut("chi2/ndof(pi) < 10", [](const event &e) {
+    return std::all_of(e.tracks.begin(), e.tracks.end(), [](const track &trk) {
+      return trk.chi2 / trk.ndof < 10;
+    });
   });
   rc->add_cut("pt(pi) > 0.2", [](const event &e) {
     return std::all_of(e.tracks.begin(), e.tracks.end(), [](const track &trk) {

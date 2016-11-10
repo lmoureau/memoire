@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
   QApplication app(argc, argv);
 
   // For strtod
-  std::setlocale(LC_ALL, "C");
+//  std::setlocale(LC_ALL, "C");
 
   // Histograms
   run r;

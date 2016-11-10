@@ -158,26 +158,22 @@ int main(int argc, char **argv) {
     return false;
   });
   rc->add_cut("pt(pi) > 0.2", [](const event &e) {
-    return lorentz::pt(e.tracks[0].p) > .2 && lorentz::pt(e.tracks[1].p) > .2;
+    return std::all_of(e.tracks.begin(), e.tracks.end(), [](const track &trk) {
+      return lorentz::pt(trk.p) > .2;
+    });
   });
   rc->add_cut("M(pi pi) > 0.5", [](const event &e) {
     return e.p.norm() > .5;
   });
   rc->add_cut("|eta(pi)| < 2.4", [](const event &e) {
-    bool ok = true;
-    for (int i = 0; i < 2; ++i) {
-      double eta = lorentz::eta(e.tracks[i].p);
-      ok &= std::abs(eta) < 2.4;
-    }
-    return ok;
+    return std::all_of(e.tracks.begin(), e.tracks.end(), [](const track &trk) {
+      return std::abs(lorentz::eta(trk.p)) < 2.4;
+    });
   });
   rc->add_cut("|y(pi)| > 2", false, [](const event &e) {
-    bool ok = true;
-    for (int i = 0; i < 2; ++i) {
-      double y = lorentz::rapidity(e.tracks[i].p);
-      ok &= std::abs(y) > 2;
-    }
-    return ok;
+    return std::all_of(e.tracks.begin(), e.tracks.end(), [](const track &trk) {
+      return std::abs(lorentz::rapidity(trk.p)) > 2;
+    });
   });
 
   hlt_parser hparser("/home/louis/Documents/ULB/MA1/Mémoire/data/out.root");

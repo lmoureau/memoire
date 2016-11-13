@@ -31,6 +31,7 @@ find_package(Qt4 REQUIRED QtGui)
 ################################################################################
 
 add_executable(memoire
+  cached_event_source.cpp
   castor.cpp
   event.cpp
   histogram-qt.cpp

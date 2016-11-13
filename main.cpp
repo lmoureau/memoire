@@ -5,6 +5,7 @@
 
 #include <QApplication>
 
+#include "cached_event_source.h"
 #include "histogram.h"
 #include "histogram-qt.h"
 #include "main_window.h"
@@ -209,7 +210,7 @@ int main(int argc, char **argv) {
   starlight_parser parser("/home/louis/Documents/ULB/MA1/Mémoire/starlight/data/slight.rho.out");
 
   // Loop over events
-  main_window *win = new main_window(r, rc, &hparser);
+  main_window *win = new main_window(r, rc, new cached_event_source(&hparser));
   win->showMaximized();
 
   return app.exec();

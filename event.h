@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "castor.h"
 #include "lorentz.h"
 
 struct track
@@ -24,6 +25,7 @@ struct event
   int id;
   std::vector<track> tracks;
   lorentz::vec p;
+  castor castor_status;
 
   void add_track(const track &t);
 };

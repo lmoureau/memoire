@@ -137,8 +137,17 @@ int main(int argc, char **argv) {
     return std::abs((e.tracks[0].p - e.tracks[1].p).norm());
   });
 
+  hist::linear_axis<double> castor_energy_axis =
+      hist::linear_axis<double>(-15, 30, 100);
+  r.add_fill("Castor E", castor_energy_axis, [](const event &e) {
+    return e.castor_status.energy();
+  });
+
   // Cuts
   run_config *rc = new run_config;
+  rc->add_cut("Castor E < 9 GeV", [](const event &e) {
+    return e.castor_status.energy() < 9;
+  });
   rc->add_cut("2 tracks", [](const event &e) {
     return e.tracks.size() == 2;
   });

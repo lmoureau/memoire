@@ -215,11 +215,12 @@ void root_parser::reset()
 struct hlt_parser::data
 {
   TFile *file;
-  TTree *tracks_tree;
+  TTree *tracks_tree, *castor_tree;
   long count, current;
   event rec;
 
   const static int BIG_TRACK_COUNT = 1000;
+  const static int BIG_HIT_COUNT = 224;
 
   int ntracks;
   double chi2[BIG_TRACK_COUNT];
@@ -231,6 +232,11 @@ struct hlt_parser::data
   double trkz[BIG_TRACK_COUNT];
   double phi[BIG_TRACK_COUNT];
   double qoverp[BIG_TRACK_COUNT];
+
+  unsigned ncastorhits;
+  int   castorhitmodule[BIG_HIT_COUNT];
+  int   castorhitsector[BIG_HIT_COUNT];
+  float castorhitdata[BIG_HIT_COUNT];
 };
 
 hlt_parser::hlt_parser(const std::string &filename) :
@@ -253,16 +259,23 @@ hlt_parser::hlt_parser(const std::string &filename) :
   _d->tracks_tree->SetBranchAddress("z", &_d->trkz);
   _d->tracks_tree->SetBranchAddress("qoverp", &_d->qoverp);
   _d->tracks_tree->SetBranchAddress("phi", &_d->phi);
+
+  _d->file->GetObject("CastorRecTree", _d->castor_tree);
+  _d->castor_tree->SetBranchAddress("nCastorRecHits", &_d->ncastorhits);
+  _d->castor_tree->SetBranchAddress("CastorRecHitModule", &_d->castorhitmodule);
+  _d->castor_tree->SetBranchAddress("CastorRecHitSector", &_d->castorhitsector);
+  _d->castor_tree->SetBranchAddress("CastorRecHitData", &_d->castorhitdata);
 }
 
 bool hlt_parser::end()
 {
   return _d->current >= _d->count;
 }
-
+#include <cassert>
 void hlt_parser::read()
 {
   _d->tracks_tree->GetEntry(_d->current++);
+  _d->castor_tree->GetEntry(_d->current++);
   _d->rec = event();
 
   for (int i = 0; i < _d->ntracks; ++i) {
@@ -274,6 +287,12 @@ void hlt_parser::read()
     trk.ndof = _d->ndof[i];
     trk.x = lorentz::vec::txyz(0, _d->trkx[i], _d->trky[i], _d->trkz[i]);
     _d->rec.add_track(trk);
+  }
+  // Castor
+  for (unsigned i = 0; i < _d->ncastorhits; ++i) {
+    _d->rec.castor_status.add_hit(_d->castorhitmodule[i],
+                                  _d->castorhitsector[i],
+                                  _d->castorhitdata[i]);
   }
 }
 

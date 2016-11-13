@@ -226,6 +226,9 @@ struct hlt_parser::data
   double lambda[BIG_TRACK_COUNT];
   int    ndof[BIG_TRACK_COUNT];
   double p[BIG_TRACK_COUNT];
+  double trkx[BIG_TRACK_COUNT];
+  double trky[BIG_TRACK_COUNT];
+  double trkz[BIG_TRACK_COUNT];
   double phi[BIG_TRACK_COUNT];
   double qoverp[BIG_TRACK_COUNT];
 };
@@ -245,6 +248,9 @@ hlt_parser::hlt_parser(const std::string &filename) :
   _d->tracks_tree->SetBranchAddress("lambda", &_d->lambda);
   _d->tracks_tree->SetBranchAddress("ndof", &_d->ndof);
   _d->tracks_tree->SetBranchAddress("p", &_d->p);
+  _d->tracks_tree->SetBranchAddress("x", &_d->trkx);
+  _d->tracks_tree->SetBranchAddress("y", &_d->trky);
+  _d->tracks_tree->SetBranchAddress("z", &_d->trkz);
   _d->tracks_tree->SetBranchAddress("qoverp", &_d->qoverp);
   _d->tracks_tree->SetBranchAddress("phi", &_d->phi);
 }
@@ -266,6 +272,7 @@ void hlt_parser::read()
     trk.charge = _d->qoverp[i] > 0 ? 1 : -1;
     trk.chi2 = _d->chi2[i];
     trk.ndof = _d->ndof[i];
+    trk.x = lorentz::vec::txyz(0, _d->trkx[i], _d->trky[i], _d->trkz[i]);
     _d->rec.add_track(trk);
   }
 }

@@ -14,6 +14,7 @@ struct track
   int matched = -1;
   double chi2;
   int ndof;
+  lorentz::vec x; ///< Temporal component == 0!
 
   void match(const std::vector<track> &tracks);
 };

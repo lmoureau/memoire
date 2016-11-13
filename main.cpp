@@ -132,6 +132,11 @@ int main(int argc, char **argv) {
     return e.tracks[1].chi2 / e.tracks[1].ndof;
   });
 
+  hist::linear_axis<double> x_axis = hist::linear_axis<double>(0, 0.1, 100);
+  r.add_fill("|vec_x[0] - vec_x[1]|", x_axis, [](const event &e) {
+    return std::abs((e.tracks[0].p - e.tracks[1].p).norm());
+  });
+
   // Cuts
   run_config *rc = new run_config;
   rc->add_cut("2 tracks", [](const event &e) {

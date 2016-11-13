@@ -16,7 +16,7 @@ class cached_event_source : public event_source
   bool _cache_valid;
 
 public:
-  explicit cached_event_source(event_source *in);
+  explicit cached_event_source(event_source *in, std::size_t size_hint = 0);
 
   bool end();
   void read();

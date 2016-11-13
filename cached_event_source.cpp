@@ -1,11 +1,16 @@
 #include "cached_event_source.h"
 
-cached_event_source::cached_event_source(event_source *in) :
+cached_event_source::cached_event_source(event_source *in,
+                                         std::size_t size_hint) :
   _in(in),
   _cache_position(-1),
   _cache_size(0),
   _cache_valid(false)
-{}
+{
+  if (size_hint > 0) {
+    _cache.reserve(size_hint);
+  }
+}
 
 bool cached_event_source::end()
 {
@@ -13,7 +18,10 @@ bool cached_event_source::end()
     return _cache_position == _cache_size - 1;
   } else {
     bool end = _in->end();
-    _cache_valid = end;
+    if (end) {
+      _cache.shrink_to_fit();
+      _cache_valid = true;
+    }
     return end;
   }
 }

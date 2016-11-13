@@ -7,7 +7,7 @@
 
 #include "event.h"
 #include "histogram.h"
-#include "parser.h"
+#include "event_source.h"
 
 class run
 {
@@ -54,10 +54,10 @@ public:
   void add_fill(const std::string &name, const hist::linear_axis<double> &axis,
                 const fill_fct fill);
 
-  result operator() (parser *in);
+  result operator() (event_source *in);
 
 private:
-  void process_event(parser *in);
+  void process_event(event_source *in);
 };
 
 #endif // RUN_H

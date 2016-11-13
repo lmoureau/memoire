@@ -5,7 +5,7 @@
 
 #include <qcustomplot.h>
 
-#include "parser.h"
+#include "event_source.h"
 #include "run_config.h"
 
 class main_window : public QMainWindow
@@ -15,13 +15,13 @@ class main_window : public QMainWindow
   run _basic_run;
   run::result _result;
   run_config *_config;
-  parser *_parser;
+  event_source *_event_source;
   QCustomPlot *_plot;
   QListWidget *_plots;
   bool _log_scale;
 
 public:
-  explicit main_window(run basic_run, run_config *rc, parser *in);
+  explicit main_window(run basic_run, run_config *rc, event_source *in);
 
 private slots:
   std::string current_plot_name() const;

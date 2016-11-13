@@ -36,7 +36,7 @@ add_executable(memoire
   histogram-qt.cpp
   main.cpp
   main_window.cpp
-  parser.cpp
+  parsers.cpp
   qcustomplot.cpp
   run.cpp
   run_config.cpp)

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <numeric>
@@ -7,7 +8,7 @@
 #include "histogram.h"
 #include "histogram-qt.h"
 #include "main_window.h"
-#include "parser.h"
+#include "parsers.h"
 #include "run.h"
 #include "run_config.h"
 

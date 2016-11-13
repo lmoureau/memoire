@@ -6,22 +6,9 @@
 #include <string>
 
 #include "event.h"
+#include "event_source.h"
 
-class parser
-{
-public:
-  virtual ~parser() {}
-
-  virtual bool end() = 0;
-  virtual bool has_gen() { return true; }
-  virtual bool has_rec() { return true; }
-  virtual void read() = 0;
-  virtual event rec() = 0;
-  virtual event gen() = 0;
-  virtual void reset() = 0;
-};
-
-class starlight_parser : public parser
+class starlight_parser : public event_source
 {
   std::ifstream _in;
   std::string _filename;
@@ -39,7 +26,7 @@ public:
   void reset();
 };
 
-class root_parser : public parser
+class root_parser : public event_source
 {
   std::string _filename;
   struct data;
@@ -59,7 +46,7 @@ public:
   void reset();
 };
 
-class hlt_parser : public parser
+class hlt_parser : public event_source
 {
   std::string _filename;
   struct data;

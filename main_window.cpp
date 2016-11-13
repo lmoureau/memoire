@@ -1,5 +1,7 @@
 #include "main_window.h"
 
+#include <fstream>
+
 #include <QAction>
 #include <QFileDialog>
 #include <QSplitter>
@@ -8,10 +10,10 @@
 
 #include "histogram-qt.h"
 
-main_window::main_window(run basic_run, run_config *rc, parser *in) :
+main_window::main_window(run basic_run, run_config *rc, event_source *in) :
   _basic_run(basic_run),
   _config(rc),
-  _parser(in),
+  _event_source(in),
   _plot(new QCustomPlot),
   _plots(new QListWidget),
   _log_scale(false)
@@ -73,8 +75,8 @@ void main_window::refresh_results()
 
   run r = _basic_run;
   _config->fill_run(r);
-  _parser->reset();
-  _result = r(_parser);
+  _event_source->reset();
+  _result = r(_event_source);
 
   QStringList plot_names;
   for (const auto &element : _result.histos) {

@@ -17,7 +17,7 @@ void run::add_fill(const std::string &name,
       hist::histogram2d(axis, axis) });
 }
 
-run::result run::operator() (parser *in)
+run::result run::operator() (event_source *in)
 {
   for (in->read(); !in->end(); in->read()) {
     process_event(in);
@@ -35,7 +35,7 @@ run::result run::operator() (parser *in)
   return r;
 }
 
-void run::process_event(parser *in)
+void run::process_event(event_source *in)
 {
   bool has_gen = in->has_gen();
   event gen = has_gen ? in->gen() : event();

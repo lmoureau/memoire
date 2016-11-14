@@ -145,10 +145,49 @@ int main(int argc, char **argv) {
     return e.castor_status.energy();
   });
 
+  hist::linear_axis<double> hcal_energy_axis =
+      hist::linear_axis<double>(0, 5, 100);
+  r.add_fill("HCal Emax (b+)", hcal_energy_axis, [](const event &e) {
+    return e.hcal.barrel.plus;
+  });
+  r.add_fill("HCal Emax (b-)", hcal_energy_axis, [](const event &e) {
+    return e.hcal.barrel.minus;
+  });
+  r.add_fill("HCal Emax (e+)", hcal_energy_axis, [](const event &e) {
+    return e.hcal.endcap.plus;
+  });
+  r.add_fill("HCal Emax (e-)", hcal_energy_axis, [](const event &e) {
+    return e.hcal.endcap.minus;
+  });
+  r.add_fill("HCal Emax (f+)", hcal_energy_axis, [](const event &e) {
+    return e.hcal.forward.plus;
+  });
+  r.add_fill("HCal Emax (f-)", hcal_energy_axis, [](const event &e) {
+    return e.hcal.forward.minus;
+  });
+
+  hist::linear_axis<double> ecal_energy_axis =
+      hist::linear_axis<double>(0, 5, 100);
+  r.add_fill("ECal Emax (b+)", ecal_energy_axis, [](const event &e) {
+    return e.ecal.barrel.plus;
+  });
+  r.add_fill("ECal Emax (b-)", ecal_energy_axis, [](const event &e) {
+    return e.ecal.barrel.minus;
+  });
+  r.add_fill("ECal Emax (e+)", ecal_energy_axis, [](const event &e) {
+    return e.ecal.endcap.plus;
+  });
+  r.add_fill("ECal Emax (e-)", ecal_energy_axis, [](const event &e) {
+    return e.ecal.endcap.minus;
+  });
+
   // Cuts
   run_config *rc = new run_config;
   rc->add_cut("Castor E < 9 GeV", [](const event &e) {
     return e.castor_status.energy() < 9;
+  });
+  rc->add_cut("HE Emax < 1.95", [](const event &e) {
+    return e.hcal.endcap.plus < 1.95 && e.hcal.endcap.minus < 1.95;
   });
   rc->add_cut("2 tracks", [](const event &e) {
     return e.tracks.size() == 2;

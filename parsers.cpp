@@ -215,7 +215,7 @@ void root_parser::reset()
 struct hlt_parser::data
 {
   TFile *file;
-  TTree *tracks_tree, *castor_tree;
+  TTree *tracks_tree, *castor_tree, *hbhe_tree, *hf_tree, *eb_tree, *ee_tree;
   long count, current;
   event rec;
 
@@ -265,6 +265,24 @@ hlt_parser::hlt_parser(const std::string &filename) :
   _d->castor_tree->SetBranchAddress("CastorRecHitModule", &_d->castorhitmodule);
   _d->castor_tree->SetBranchAddress("CastorRecHitSector", &_d->castorhitsector);
   _d->castor_tree->SetBranchAddress("CastorRecHitData", &_d->castorhitdata);
+
+  _d->file->GetObject("HBHERecHitTree", _d->hbhe_tree);
+  _d->hbhe_tree->SetBranchAddress("HEEnergyMaxPlus", &_d->rec.hcal.endcap.plus);
+  _d->hbhe_tree->SetBranchAddress("HEEnergyMaxMinus", &_d->rec.hcal.endcap.minus);
+  _d->hbhe_tree->SetBranchAddress("HBEnergyMaxPlus", &_d->rec.hcal.barrel.plus);
+  _d->hbhe_tree->SetBranchAddress("HBEnergyMaxMinus", &_d->rec.hcal.barrel.minus);
+
+  _d->file->GetObject("HFRecHitTree", _d->hf_tree);
+  _d->hf_tree->SetBranchAddress("HFEnergyMaxPlus", &_d->rec.hcal.forward.plus);
+  _d->hf_tree->SetBranchAddress("HFEnergyMaxMinus", &_d->rec.hcal.forward.minus);
+
+  _d->file->GetObject("EERecHitTree", _d->ee_tree);
+  _d->ee_tree->SetBranchAddress("EEEnergyMaxPlus", &_d->rec.ecal.endcap.plus);
+  _d->ee_tree->SetBranchAddress("EEEnergyMaxMinus", &_d->rec.ecal.endcap.minus);
+
+  _d->file->GetObject("EBRecHitTree", _d->eb_tree);
+  _d->eb_tree->SetBranchAddress("EBEnergyMaxPlus", &_d->rec.ecal.barrel.plus);
+  _d->eb_tree->SetBranchAddress("EBEnergyMaxMinus", &_d->rec.ecal.barrel.minus);
 }
 
 bool hlt_parser::end()
@@ -277,6 +295,10 @@ void hlt_parser::read()
   _d->rec = event();
   _d->tracks_tree->GetEntry(_d->current);
   _d->castor_tree->GetEntry(_d->current);
+  _d->hbhe_tree->GetEntry(_d->current);
+  _d->hf_tree->GetEntry(_d->current);
+  _d->eb_tree->GetEntry(_d->current);
+  _d->ee_tree->GetEntry(_d->current);
 
   for (int i = 0; i < _d->ntracks; ++i) {
     track trk;

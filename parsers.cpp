@@ -271,12 +271,12 @@ bool hlt_parser::end()
 {
   return _d->current >= _d->count;
 }
-#include <cassert>
+
 void hlt_parser::read()
 {
-  _d->tracks_tree->GetEntry(_d->current++);
-  _d->castor_tree->GetEntry(_d->current++);
   _d->rec = event();
+  _d->tracks_tree->GetEntry(_d->current);
+  _d->castor_tree->GetEntry(_d->current);
 
   for (int i = 0; i < _d->ntracks; ++i) {
     track trk;
@@ -294,6 +294,8 @@ void hlt_parser::read()
                                   _d->castorhitsector[i],
                                   _d->castorhitdata[i]);
   }
+
+  _d->current++;
 }
 
 event hlt_parser::gen()

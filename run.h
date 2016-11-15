@@ -3,8 +3,10 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <vector>
 
+#include "cut.h"
 #include "event.h"
 #include "histogram.h"
 #include "event_source.h"
@@ -28,12 +30,6 @@ public:
   typedef std::function<double (const event &evt)> fill_fct;
 
 private:
-  struct cut
-  {
-    std::string name;
-    cut_fct function;
-  };
-
   struct fill
   {
     std::string name;
@@ -44,13 +40,13 @@ private:
   };
 
   std::vector<fill> _fills;
-  std::vector<cut> _cuts;
+  std::vector<std::shared_ptr<cut>> _cuts;
 
 public:
   explicit run() {}
   virtual ~run() {}
 
-  void add_cut(const std::string &name, const cut_fct cut);
+  void add(const std::shared_ptr<cut> &c);
   void add_fill(const std::string &name, const hist::linear_axis<double> &axis,
                 const fill_fct fill);
 

@@ -1,8 +1,8 @@
 #include "run.h"
 
-void run::add_cut(const std::string &name, const cut_fct fct)
+void run::add(const std::shared_ptr<cut> &c)
 {
-  _cuts.push_back(cut{ name, fct });
+  _cuts.push_back(c);
 }
 
 void run::add_fill(const std::string &name,
@@ -44,8 +44,8 @@ void run::process_event(event_source *in)
 
   bool passes_cuts = true;
   if (has_rec) {
-    for (const cut &c : _cuts) {
-      if (!c.function(rec)) {
+    for (auto c : _cuts) {
+      if (!(*c)(rec)) {
         passes_cuts = false;
         break;
       }

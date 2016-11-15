@@ -5,10 +5,14 @@ project(memoire)
 # Dependencies                                                                 #
 ################################################################################
 
+# Lua
+find_package(Lua51 REQUIRED)
+include_directories(${LUA_INCLUDE_DIR})
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -pedantic -O2 -g")
 
-# C++11
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+# C++14 for sol
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 # ROOT
 EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -41,6 +45,8 @@ add_executable(memoire
   qcustomplot.cpp
   run.cpp
   run_config.cpp)
+# Qt
+target_link_libraries(memoire ${LUA_LIBRARIES})
 # Qt
 target_link_libraries(memoire Qt4::QtGui)
 # ROOT

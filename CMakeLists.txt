@@ -11,9 +11,6 @@ include_directories(${LUA_INCLUDE_DIR})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -pedantic -O2 -g")
 
-# C++14 for sol
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-
 # ROOT
 EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 EXECUTE_PROCESS(COMMAND root-config --libdir OUTPUT_VARIABLE ROOT_LIB_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -29,6 +26,9 @@ set(ROOT_LIBS "${ROOT_LIBCORE}" "${ROOT_LIBRIO}" "${ROOT_LIBTREE}")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 find_package(Qt4 REQUIRED QtGui)
+
+# C++14 for sol
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 ################################################################################
 # Build configuration                                                          #
@@ -46,7 +46,7 @@ add_executable(memoire
   run.cpp
   run_config.cpp)
 # Qt
-target_link_libraries(memoire ${LUA_LIBRARIES})
+target_link_libraries(memoire luajit-5.1)
 # Qt
 target_link_libraries(memoire Qt4::QtGui)
 # ROOT

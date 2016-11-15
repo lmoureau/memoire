@@ -21,8 +21,8 @@ public:
 
   bool end();
   void read();
-  event rec();
-  event gen();
+  const event &rec();
+  const event &gen();
   void reset();
 };
 
@@ -41,8 +41,8 @@ public:
   bool end();
   bool has_rec();
   void read();
-  event rec();
-  event gen();
+  const event &rec();
+  const event &gen();
   void reset();
 };
 
@@ -60,8 +60,8 @@ public:
 
   bool end();
   void read();
-  event rec();
-  event gen();
+  const event &rec();
+  const event &gen();
   void reset();
 };
 

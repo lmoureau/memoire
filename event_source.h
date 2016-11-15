@@ -1,7 +1,7 @@
 #ifndef EVENT_SOURCE_H
 #define EVENT_SOURCE_H
 
-#include "event.h"
+class event;
 
 class event_source
 {
@@ -12,8 +12,10 @@ public:
   virtual bool has_gen() { return true; }
   virtual bool has_rec() { return true; }
   virtual void read() = 0;
-  virtual event rec() = 0;
-  virtual event gen() = 0;
+  /// The returned reference has to remain valid until the next call to read()
+  virtual const event &rec() = 0;
+  /// The returned reference has to remain valid until the next call to read()
+  virtual const event &gen() = 0;
   virtual void reset() = 0;
 };
 

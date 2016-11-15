@@ -38,9 +38,9 @@ run::result run::operator() (event_source *in)
 void run::process_event(event_source *in)
 {
   bool has_gen = in->has_gen();
-  event gen = has_gen ? in->gen() : event();
+  const event &gen = has_gen ? in->gen() : event();
   bool has_rec = in->has_rec();
-  event rec = has_rec ? in->rec() : event();
+  const event &rec = has_rec ? in->rec() : event();
 
   bool passes_cuts = true;
   if (has_rec) {

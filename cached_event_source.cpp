@@ -38,12 +38,12 @@ void cached_event_source::read()
   }
 }
 
-event cached_event_source::rec()
+const event &cached_event_source::rec()
 {
   return _cache[_cache_position];
 }
 
-event cached_event_source::gen()
+const event &cached_event_source::gen()
 {
   return _cache[_cache_position];
 }

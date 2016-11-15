@@ -86,12 +86,12 @@ void starlight_parser::read()
   }
 }
 
-event starlight_parser::gen()
+const event &starlight_parser::gen()
 {
   return _current;
 }
 
-event starlight_parser::rec()
+const event &starlight_parser::rec()
 {
   return _current;
 }
@@ -189,7 +189,7 @@ void root_parser::read()
   }
 }
 
-event root_parser::gen()
+const event &root_parser::gen()
 {
   return _d->gen;
 }
@@ -199,7 +199,7 @@ bool root_parser::has_rec()
   return _d->rec_i == _d->gen_i;
 }
 
-event root_parser::rec()
+const event &root_parser::rec()
 {
   return _d->rec;
 }
@@ -320,12 +320,12 @@ void hlt_parser::read()
   _d->current++;
 }
 
-event hlt_parser::gen()
+const event &hlt_parser::gen()
 {
   return _d->rec;
 }
 
-event hlt_parser::rec()
+const event &hlt_parser::rec()
 {
   return _d->rec;
 }

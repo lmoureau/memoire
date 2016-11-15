@@ -20,8 +20,8 @@ public:
 
   bool end();
   void read();
-  event rec();
-  event gen();
+  const event &rec();
+  const event &gen();
   void reset();
 };
 

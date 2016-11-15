@@ -39,17 +39,19 @@ public:
 class lua_cut : public cut
 {
   sol::state _lua;
-  std::string _code;
+  sol::load_result _lr;
 public:
   explicit lua_cut(const std::string &name, const std::string &code) :
-    cut(name),
-    _code("cut_result=" + code) {}
+    cut(name)
+  {
+    _lr = _lua.load("cut_result=" + code);
+  }
 
   virtual bool operator() (const event &e)
   {
     _lua["p"] = _lua.create_table_with("t", e.p.t(), "x", e.p.x(),
                                        "y", e.p.y(), "z", e.p.z());
-    _lua.script(_code);
+    _lr();
     return _lua["cut_result"];
   }
 };

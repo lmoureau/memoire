@@ -3,7 +3,10 @@
 run::run() :
   _lua(std::make_shared<sol::state>())
 {
-  _lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
+  _lua->open_libraries(sol::lib::base,
+                       sol::lib::math,
+                       sol::lib::package,
+                       sol::lib::table);
   std::string oldpath = (*_lua)["package"]["path"];
   (*_lua)["package"]["path"] = oldpath + ";./lua/?.lua;../lua/?.lua";
 }

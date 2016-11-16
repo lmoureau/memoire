@@ -351,14 +351,17 @@ void hlt_parser::fill_rec(sol::state &lua)
                                                  _d->phi[i], _d->lambda[i]);
     lua["tracks"][i] = lua.create_table();
     sol::table lua_p = lua["vec"]["new"](p.t(), p.x(), p.y(), p.z());
-    lua["tracks"][i]["p"] = lua_p;
-    lua["tracks"][i]["q"] = _d->qoverp[i] > 0 ? 1 : -1;
-    lua["tracks"][i]["chi2"] = _d->chi2[i];
-    lua["tracks"][i]["ndof"] = _d->ndof[i];
-    lua["tracks"][i]["x"] = _d->trkx[i];
-    lua["tracks"][i]["y"] = _d->trky[i];
-    lua["tracks"][i]["z"] = _d->trkz[i];
+    sol::table track = lua.create_table();
+    track["p"] = lua_p;
+    track["q"] = _d->qoverp[i] > 0 ? 1 : -1;
+    track["chi2"] = _d->chi2[i];
+    track["ndof"] = _d->ndof[i];
+    track["x"] = _d->trkx[i];
+    track["y"] = _d->trky[i];
+    track["z"] = _d->trkz[i];
+    lua["tracks"][i] = track;
   }
+  lua["tracks"]["n"] = _d->ntracks;
 }
 
 const event &hlt_parser::gen()

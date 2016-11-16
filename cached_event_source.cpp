@@ -26,6 +26,11 @@ bool cached_event_source::end()
   }
 }
 
+void cached_event_source::fill_rec(sol::state &lua)
+{
+  _in->fill_rec(lua);
+}
+
 void cached_event_source::prepare(sol::state &lua)
 {
   _in->prepare(lua);

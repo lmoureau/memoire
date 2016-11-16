@@ -19,6 +19,7 @@ public:
   virtual void prepare(sol::state &lua) {};
   virtual void read() = 0;
   /// The returned reference has to remain valid until the next call to read()
+  virtual void fill_rec(sol::state &lua) {};
   virtual const event &rec() = 0;
   /// The returned reference has to remain valid until the next call to read()
   virtual const event &gen() = 0;

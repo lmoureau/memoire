@@ -57,6 +57,7 @@ void run::process_event(event_source *in)
   in->prepare(*_lua);
   bool has_gen = in->has_gen();
   const event &gen = has_gen ? in->gen() : event();
+  in->fill_rec(*_lua);
   bool has_rec = in->has_rec();
   const event &rec = has_rec ? in->rec() : event();
 

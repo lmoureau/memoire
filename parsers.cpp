@@ -325,8 +325,24 @@ void hlt_parser::read()
 void hlt_parser::prepare(sol::state &lua)
 {
   lua.script("require(\"lorentz\")");
+}
+
+void hlt_parser::fill_rec(sol::state &lua)
+{
   lua["tracks"] = lua.create_table();
-  lua.script("p = vec.new(0, 0, 0, 0)");
+  for (int i = 0; i < _d->ntracks; ++i) {
+    lorentz::vec p = lorentz::vec::m_r_phi_theta(MASS, _d->p[i],
+                                                 _d->phi[i], _d->lambda[i]);
+    lua["tracks"][i] = lua.create_table();
+    sol::table lua_p = lua["vec"]["new"](p.t(), p.x(), p.y(), p.z());
+    lua["tracks"][i]["p"] = lua_p;
+    lua["tracks"][i]["q"] = _d->qoverp[i] > 0 ? 1 : -1;
+    lua["tracks"][i]["chi2"] = _d->chi2[i];
+    lua["tracks"][i]["ndof"] = _d->ndof[i];
+    lua["tracks"][i]["x"] = _d->trkx[i];
+    lua["tracks"][i]["y"] = _d->trky[i];
+    lua["tracks"][i]["z"] = _d->trkz[i];
+  }
 }
 
 const event &hlt_parser::gen()

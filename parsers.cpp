@@ -329,6 +329,22 @@ void hlt_parser::prepare(sol::state &lua)
 
 void hlt_parser::fill_rec(sol::state &lua)
 {
+  lua["castor_energy"] = _d->rec.castor_status.energy();
+
+  lua["ecal"] = lua.create_table();
+  lua["ecal"]["bp"] = _d->rec.ecal.barrel.plus;
+  lua["ecal"]["bm"] = _d->rec.ecal.barrel.minus;
+  lua["ecal"]["ep"] = _d->rec.ecal.endcap.plus;
+  lua["ecal"]["em"] = _d->rec.ecal.endcap.minus;
+
+  lua["hcal"] = lua.create_table();
+  lua["hcal"]["bp"] = _d->rec.hcal.barrel.plus;
+  lua["hcal"]["bm"] = _d->rec.hcal.barrel.minus;
+  lua["hcal"]["ep"] = _d->rec.hcal.endcap.plus;
+  lua["hcal"]["em"] = _d->rec.hcal.endcap.minus;
+  lua["hcal"]["fp"] = _d->rec.hcal.forward.plus;
+  lua["hcal"]["fm"] = _d->rec.hcal.forward.minus;
+
   lua["tracks"] = lua.create_table();
   for (int i = 0; i < _d->ntracks; ++i) {
     lorentz::vec p = lorentz::vec::m_r_phi_theta(MASS, _d->p[i],

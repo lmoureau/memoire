@@ -36,24 +36,13 @@ public:
 
 #include "event.h"
 
-class lua_cut : public cut
+class lua_cut
 {
-  sol::state _lua;
-  sol::load_result _lr;
+  std::string _code, _name;
 public:
-  explicit lua_cut(const std::string &name, const std::string &code) :
-    cut(name)
-  {
-    _lr = _lua.load("cut_result=" + code);
-  }
+  explicit lua_cut(const std::string &name, const std::string &code);
 
-  virtual bool operator() (const event &e)
-  {
-    _lua["p"] = _lua.create_table_with("t", e.p.t(), "x", e.p.x(),
-                                       "y", e.p.y(), "z", e.p.z());
-    _lr();
-    return _lua["cut_result"];
-  }
+  sol::load_result load_into(sol::state &lua);
 };
 
 #endif // CUT_H

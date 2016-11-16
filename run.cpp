@@ -1,8 +1,25 @@
 #include "run.h"
 
+run::run() :
+  _lua(std::make_shared<sol::state>())
+{
+  _lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::package);
+  std::string oldpath = (*_lua)["package"]["path"];
+  (*_lua)["package"]["path"] = oldpath + ";./lua/?.lua;../lua/?.lua";
+}
+
 void run::add(const std::shared_ptr<cut> &c)
 {
   _cuts.push_back(c);
+}
+
+void run::add(const std::shared_ptr<lua_cut> &c)
+{
+  sol::load_result result = c->load_into(*_lua);
+  if (!result.valid()) {
+    throw sol::error(result.get<std::string>());
+  }
+  _lua_cuts.push_back(result);
 }
 
 void run::add_fill(const std::string &name,
@@ -37,6 +54,7 @@ run::result run::operator() (event_source *in)
 
 void run::process_event(event_source *in)
 {
+  in->prepare(*_lua);
   bool has_gen = in->has_gen();
   const event &gen = has_gen ? in->gen() : event();
   bool has_rec = in->has_rec();
@@ -46,6 +64,12 @@ void run::process_event(event_source *in)
   if (has_rec) {
     for (auto c : _cuts) {
       if (!(*c)(rec)) {
+        passes_cuts = false;
+        break;
+      }
+    }
+    for (auto func : _lua_cuts) {
+      if (!func()) {
         passes_cuts = false;
         break;
       }

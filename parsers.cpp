@@ -6,6 +6,8 @@
 #include <TFile.h>
 #include <TTree.h>
 
+#include "sol.hpp"
+
 #define MASS 0.13957018 // pion
 //#define MASS 0.493677 // kaon
 
@@ -318,6 +320,13 @@ void hlt_parser::read()
   }
 
   _d->current++;
+}
+
+void hlt_parser::prepare(sol::state &lua)
+{
+  lua.script("require(\"lorentz\")");
+  lua["tracks"] = lua.create_table();
+  lua.script("p = vec.new(0, 0, 0, 0)");
 }
 
 const event &hlt_parser::gen()

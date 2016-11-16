@@ -6,12 +6,6 @@ run_config::run_config(QWidget *parent) :
   QListWidget(parent)
 {
   connect(this, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(item_changed()));
-
-  _cuts.push_back(cut_info{std::make_shared<lua_cut>("**lua**", "p.t < .7"), true});
-  QListWidgetItem *item = new QListWidgetItem("**lua**", this);
-  item->setCheckState(Qt::Checked);
-  item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-  emit config_changed();
 }
 
 void run_config::add_cut(const std::string &name, lambda_cut::lambda_function cut)
@@ -38,6 +32,7 @@ void run_config::item_changed()
 
 void run_config::fill_run(run &r) const
 {
+  r.add(std::make_shared<lua_cut>("**lua**", "return p.t < .7"));
   for (std::vector<cut_info>::const_iterator it = _cuts.begin();
        it != _cuts.end(); ++it) {
     if (it->enabled) {

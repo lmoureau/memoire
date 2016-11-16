@@ -26,6 +26,11 @@ bool cached_event_source::end()
   }
 }
 
+void cached_event_source::prepare(sol::state &lua)
+{
+  _in->prepare(lua);
+}
+
 void cached_event_source::read()
 {
   if (_cache_valid) {

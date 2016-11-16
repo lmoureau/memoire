@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "sol.hpp"
+
 #include "castor.h"
 #include "lorentz.h"
 

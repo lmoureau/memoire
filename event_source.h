@@ -3,6 +3,11 @@
 
 class event;
 
+namespace sol
+{
+  class state;
+}
+
 class event_source
 {
 public:
@@ -11,6 +16,7 @@ public:
   virtual bool end() = 0;
   virtual bool has_gen() { return true; }
   virtual bool has_rec() { return true; }
+  virtual void prepare(sol::state &lua) {};
   virtual void read() = 0;
   /// The returned reference has to remain valid until the next call to read()
   virtual const event &rec() = 0;

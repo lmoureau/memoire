@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 
+#include "sol.hpp"
+
 #include "cut.h"
 #include "event.h"
 #include "histogram.h"
@@ -42,11 +44,15 @@ private:
   std::vector<fill> _fills;
   std::vector<std::shared_ptr<cut>> _cuts;
 
+  std::shared_ptr<sol::state> _lua;
+  std::vector<sol::function> _lua_cuts;
+
 public:
-  explicit run() {}
+  explicit run();
   virtual ~run() {}
 
   void add(const std::shared_ptr<cut> &c);
+  void add(const std::shared_ptr<lua_cut> &c);
   void add_fill(const std::string &name, const hist::linear_axis<double> &axis,
                 const fill_fct fill);
 

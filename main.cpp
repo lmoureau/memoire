@@ -183,18 +183,10 @@ int main(int argc, char **argv) {
 
   // Cuts
   run_config *rc = new run_config;
-  rc->add_cut("Castor E < 9 GeV", [](const event &e) {
-    return e.castor_status.energy() < 9;
-  });
-  rc->add_cut("HE Emax < 1.95", [](const event &e) {
-    return e.hcal.endcap.plus < 1.95 && e.hcal.endcap.minus < 1.95;
-  });
-  rc->add_cut("2 tracks", [](const event &e) {
-    return e.tracks.size() == 2;
-  });
-  rc->add_cut("4 tracks", false, [](const event &e) {
-    return e.tracks.size() == 4;
-  });
+  rc->add_lua_cut("Castor E < 9", "return castor_energy < 9");
+  rc->add_lua_cut("HE Emax < 1.92", "return hcal.ep < 1.95 and hcal.em < 1.95");
+  rc->add_lua_cut("2 tracks", "return tracks.n == 2");
+  rc->add_lua_cut("4 tracks", "return tracks.n == 4", false);
   rc->add_cut("neutral event", [](const event &e) {
     return 0 == std::accumulate(e.tracks.cbegin(), e.tracks.cend(), 0,
       [](int charge, const track &t) { return charge + t.charge; });

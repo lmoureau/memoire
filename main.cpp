@@ -184,13 +184,13 @@ int main(int argc, char **argv) {
   // Cuts
   run_config *rc = new run_config;
   rc->add_lua_cut("Castor E < 9", "return castor_energy < 9");
-  rc->add_lua_cut("HE Emax < 1.92", "return hcal.ep < 1.95 and hcal.em < 1.95");
+  rc->add_lua_cut("HE Emax < 1.92", "return hcal.ep < 1.92 and hcal.em < 1.92");
   rc->add_lua_cut("2 tracks", "return tracks.n == 2");
   rc->add_lua_cut("4 tracks", "return tracks.n == 4", false);
-  rc->add_cut("neutral event", [](const event &e) {
-    return 0 == std::accumulate(e.tracks.cbegin(), e.tracks.cend(), 0,
-      [](int charge, const track &t) { return charge + t.charge; });
-  });
+  rc->add_lua_cut("neutral event",
+                  "local c = 0;"
+                  "for i = 0, tracks.n - 1 do c = c + tracks[i].q; end;"
+                  "return c == 0");
   rc->add_cut("2 tracks with |M - 775| < 100", false, [](const event &e) {
     for (auto &t1 : e.tracks) {
       for (auto &t2 : e.tracks) {
@@ -212,16 +212,20 @@ int main(int argc, char **argv) {
     }
     return false;
   });
-  rc->add_cut("chi2/ndof(pi) < 10", [](const event &e) {
-    return std::all_of(e.tracks.begin(), e.tracks.end(), [](const track &trk) {
-      return trk.chi2 / trk.ndof < 10;
-    });
-  });
-  rc->add_cut("pt(pi) > 0.2", [](const event &e) {
-    return std::all_of(e.tracks.begin(), e.tracks.end(), [](const track &trk) {
-      return lorentz::pt(trk.p) > .2;
-    });
-  });
+  rc->add_lua_cut("chi2/ndof < 10",
+                  "for i = 0, tracks.n - 1 do "
+                    "if tracks[i].chi2 / tracks[i].ndof >= 10 then "
+                      "return false;"
+                    "end;"
+                  "end;"
+                  "return true");
+  rc->add_lua_cut("pt > .2",
+                  "for i = 0, tracks.n - 1 do "
+                    "if math.sqrt(tracks[i].p.x^2 + tracks[i].p.y^2) <= .2 then "
+                      "return false;"
+                    "end;"
+                  "end;"
+                  "return true");
   rc->add_cut("M(pi pi) > 0.5", [](const event &e) {
     return e.p.norm() > .5;
   });

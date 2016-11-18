@@ -322,34 +322,34 @@ void hlt_parser::read()
   _d->current++;
 }
 
-void hlt_parser::prepare(sol::state &lua)
+void hlt_parser::prepare(sol::state &lua, sol::table &event)
 {
   lua.script("require(\"lorentz\")");
 }
 
-void hlt_parser::fill_rec(sol::state &lua)
+void hlt_parser::fill_rec(sol::state &lua, sol::table &event)
 {
-  lua["castor_energy"] = _d->rec.castor_status.energy();
+  event["castor_energy"] = _d->rec.castor_status.energy();
 
-  lua["ecal"] = lua.create_table();
-  lua["ecal"]["bp"] = _d->rec.ecal.barrel.plus;
-  lua["ecal"]["bm"] = _d->rec.ecal.barrel.minus;
-  lua["ecal"]["ep"] = _d->rec.ecal.endcap.plus;
-  lua["ecal"]["em"] = _d->rec.ecal.endcap.minus;
+  event["ecal"] = lua.create_table();
+  event["ecal"]["bp"] = _d->rec.ecal.barrel.plus;
+  event["ecal"]["bm"] = _d->rec.ecal.barrel.minus;
+  event["ecal"]["ep"] = _d->rec.ecal.endcap.plus;
+  event["ecal"]["em"] = _d->rec.ecal.endcap.minus;
 
-  lua["hcal"] = lua.create_table();
-  lua["hcal"]["bp"] = _d->rec.hcal.barrel.plus;
-  lua["hcal"]["bm"] = _d->rec.hcal.barrel.minus;
-  lua["hcal"]["ep"] = _d->rec.hcal.endcap.plus;
-  lua["hcal"]["em"] = _d->rec.hcal.endcap.minus;
-  lua["hcal"]["fp"] = _d->rec.hcal.forward.plus;
-  lua["hcal"]["fm"] = _d->rec.hcal.forward.minus;
+  event["hcal"] = lua.create_table();
+  event["hcal"]["bp"] = _d->rec.hcal.barrel.plus;
+  event["hcal"]["bm"] = _d->rec.hcal.barrel.minus;
+  event["hcal"]["ep"] = _d->rec.hcal.endcap.plus;
+  event["hcal"]["em"] = _d->rec.hcal.endcap.minus;
+  event["hcal"]["fp"] = _d->rec.hcal.forward.plus;
+  event["hcal"]["fm"] = _d->rec.hcal.forward.minus;
 
-  lua["tracks"] = lua.create_table();
+  event["tracks"] = lua.create_table();
   for (int i = 0; i < _d->ntracks; ++i) {
     lorentz::vec p = lorentz::vec::m_r_phi_theta(MASS, _d->p[i],
                                                  _d->phi[i], _d->lambda[i]);
-    lua["tracks"][i] = lua.create_table();
+    event["tracks"][i] = lua.create_table();
     sol::table lua_p = lua["vec"]["new"](p.t(), p.x(), p.y(), p.z());
     sol::table track = lua.create_table();
     track["p"] = lua_p;
@@ -359,9 +359,9 @@ void hlt_parser::fill_rec(sol::state &lua)
     track["x"] = _d->trkx[i];
     track["y"] = _d->trky[i];
     track["z"] = _d->trkz[i];
-    lua["tracks"][i] = track;
+    event["tracks"][i] = track;
   }
-  lua["tracks"]["n"] = _d->ntracks;
+  event["tracks"]["n"] = _d->ntracks;
 }
 
 const event &hlt_parser::gen()

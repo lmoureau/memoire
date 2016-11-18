@@ -1,12 +1,9 @@
 #ifndef EVENT_SOURCE_H
 #define EVENT_SOURCE_H
 
-class event;
+#include "sol.hpp"
 
-namespace sol
-{
-  class state;
-}
+class event;
 
 class event_source
 {
@@ -16,10 +13,10 @@ public:
   virtual bool end() = 0;
   virtual bool has_gen() { return true; }
   virtual bool has_rec() { return true; }
-  virtual void prepare(sol::state &lua) {};
+  virtual void prepare(sol::state &lua, sol::table &event) {};
   virtual void read() = 0;
   /// The returned reference has to remain valid until the next call to read()
-  virtual void fill_rec(sol::state &lua) {};
+  virtual void fill_rec(sol::state &lua, sol::table &event) {};
   virtual const event &rec() = 0;
   /// The returned reference has to remain valid until the next call to read()
   virtual const event &gen() = 0;

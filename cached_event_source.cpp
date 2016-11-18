@@ -26,14 +26,14 @@ bool cached_event_source::end()
   }
 }
 
-void cached_event_source::fill_rec(sol::state &lua)
+void cached_event_source::fill_rec(sol::state &lua, sol::table &event)
 {
-  _in->fill_rec(lua);
+  _in->fill_rec(lua, event);
 }
 
-void cached_event_source::prepare(sol::state &lua)
+void cached_event_source::prepare(sol::state &lua, sol::table &event)
 {
-  _in->prepare(lua);
+  _in->prepare(lua, event);
 }
 
 void cached_event_source::read()

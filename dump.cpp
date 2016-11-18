@@ -26,12 +26,15 @@ int main(int argc, char **argv)
 
   // Read one event at a time and print them all
   unserializer uns(std::cin);
-  while (std::cin) {
+  bool end_of_file = false;
+  while (std::cin && !end_of_file) {
     sol::table e;
-    uns.read(lua, e);
-    std::cout << "=== Next event ===\n";
-    print_table(e);
-    std::cout << "\n";
+    uns.read(lua, e, end_of_file);
+    if (!end_of_file) {
+      std::cout << "=== Next event ===\n";
+      print_table(e);
+      std::cout << "\n";
+    }
   }
 
   return 0;

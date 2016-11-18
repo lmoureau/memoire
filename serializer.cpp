@@ -109,10 +109,10 @@ void serializer::print_value(const std::string &name, const sol::object &v)
   }
 }
 
-void unserializer::read(sol::state &lua, sol::table &event)
+void unserializer::read(sol::state &lua, sol::table &event, bool &eof)
 {
   event = lua.create_table();
-  read_table_contents(lua, event);
+  read_table_contents(lua, event, &eof);
 }
 
 double unserializer::read_id()
@@ -197,8 +197,15 @@ void unserializer::read_new_type(sol::state &lua)
   }
 }
 
-void unserializer::read_table_contents(sol::state &lua, sol::table &t)
+void unserializer::read_table_contents(sol::state &lua, sol::table &t,
+                                       bool *eof)
 {
+  // An empty event means eof. We set it to true here, and then to false when we
+  // encounter a value.
+  bool fake_eof;
+  bool &ref_eof = (eof != nullptr ? *eof : fake_eof);
+  ref_eof = true;
+
   // As the metatable can prevent adding new data, we need to set it at the very
   // end. As we can read it any time, we need to save it temporarily.
   bool has_metatable = false;
@@ -231,42 +238,52 @@ void unserializer::read_table_contents(sol::state &lua, sol::table &t)
       has_metatable = true;
       break;
     case opcode::named_false:
+      ref_eof = false;
       t[read_name_id()] = false;
       break;
     case opcode::named_true:
+      ref_eof = false;
       t[read_name_id()] = true;
       break;
     case opcode::named_number:
+      ref_eof = false;
       name = read_name_id();
       _in >> value;
       t[name] = value;
       break;
     case opcode::named_string:
+      ref_eof = false;
       name = read_name_id();
       t[name] = read_string();
       break;
     case opcode::named_table:
+      ref_eof = false;
       name = read_name_id();
       tab = lua.create_table();
       read_table_contents(lua, tab);
       t[name] = tab;
       break;
     case opcode::array_false:
+      ref_eof = false;
       t[read_id()] = false;
       break;
     case opcode::array_true:
+      ref_eof = false;
       t[read_id()] = true;
       break;
     case opcode::array_number:
+      ref_eof = false;
       id = read_id();
       _in >> value;
       t[id] = value;
       break;
     case opcode::array_string:
+      ref_eof = false;
       id = read_id();
       t[id] = read_string();
       break;
     case opcode::array_table:
+      ref_eof = false;
       id = read_id();
       tab = lua.create_table();
       read_table_contents(lua, tab);

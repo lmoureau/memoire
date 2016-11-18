@@ -54,7 +54,7 @@ class unserializer
 public:
   explicit unserializer(std::istream &in) : _in(in) {}
 
-  void read(sol::state &lua, sol::table &event);
+  void read(sol::state &lua, sol::table &event, bool &eof);
 
 private:
   double read_id();
@@ -63,7 +63,7 @@ private:
   sol::table &read_type_id();
   void read_new_name();
   void read_new_type(sol::state &lua);
-  void read_table_contents(sol::state &lua, sol::table &t);
+  void read_table_contents(sol::state &lua, sol::table &t, bool *eof = nullptr);
 };
 
 #endif // SERIALIZER_H

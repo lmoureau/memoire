@@ -54,4 +54,8 @@ target_link_libraries(memoire Qt4::QtGui)
 # ROOT
 target_link_libraries(memoire ${ROOT_LIBS})
 
-install(TARGETS memoire RUNTIME DESTINATION bin)
+# Simple tool to dump events to stdout
+add_executable(dump dump.cpp serializer.cpp)
+target_link_libraries(dump luajit-5.1)
+
+install(TARGETS memoire dump RUNTIME DESTINATION bin)

@@ -13,6 +13,8 @@ namespace detail
   {
     end          =  0,
     new_name     =  1,
+    new_type     =  2,
+    metatable    =  3,
     named_false  = 10,
     named_true   = 11,
     named_number = 12,
@@ -30,6 +32,7 @@ class serializer
 {
   std::ostream &_out;
   std::unordered_map<std::string, int> _names;
+  std::unordered_map<std::string, int> _types;
 public:
   explicit serializer(std::ostream &out) : _out(out) {}
 
@@ -47,6 +50,7 @@ class unserializer
 {
   std::istream &_in;
   std::unordered_map<int, std::string> _names;
+  std::unordered_map<int, sol::table> _types;
 public:
   explicit unserializer(std::istream &in) : _in(in) {}
 
@@ -56,7 +60,9 @@ private:
   double read_id();
   std::string read_name_id();
   std::string read_string();
+  sol::table &read_type_id();
   void read_new_name();
+  void read_new_type(sol::state &lua);
   void read_table_contents(sol::state &lua, sol::table &t);
 };
 

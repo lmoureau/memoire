@@ -71,6 +71,9 @@ function vec.__newindex(i, a)
   end
 end
 
+vec.__class  = "vec"
+vec.__module = "lorentz"
+
 function vec.new(t, x, y, z)
   return setmetatable({ t = t or 0, x = x or 0, y = y or 0, z = z or 0 }, vec)
 end

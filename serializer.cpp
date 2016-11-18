@@ -29,6 +29,25 @@ void serializer::print_string(const std::string &str)
 
 void serializer::print_table_contents(const sol::table &t)
 {
+  // Print type information if it's in the metatable
+  if (t[sol::metatable_key] && t[sol::metatable_key]["__class"] &&
+      t[sol::metatable_key]["__module"]) {
+    std::string class_name = t[sol::metatable_key]["__class"];
+    std::string module_name = t[sol::metatable_key]["__module"];
+    if (_types.count(class_name + "@" + module_name) == 0) {
+      // Print type infomation
+      _out << "2 ";
+      print_string(class_name);
+      print_string(module_name);
+      int id = _types.size();
+      _out << id << " ";
+      // Add the type to the table
+      _types[class_name + "@" + module_name] = id;
+    }
+    int id = _types.at(class_name + "@" + module_name);
+    std::cout << "3 " << id << " ";
+  }
+  // Print values
   t.for_each([this](const sol::object &key, const sol::object &value) {
     sol::type type = key.get_type();
     // Only numbers and strings are allowed as indices for serialization
@@ -121,6 +140,14 @@ std::string unserializer::read_string()
   return data;
 }
 
+sol::table &unserializer::read_type_id()
+{
+  int type_id;
+  _in >> type_id;
+  assert(_types.count(type_id) != 0);
+  return _types.at(type_id);
+}
+
 void unserializer::read_new_name()
 {
   std::string name = read_string();
@@ -130,8 +157,53 @@ void unserializer::read_new_name()
   _names.insert(std::make_pair(id, name));
 }
 
+void unserializer::read_new_type(sol::state &lua)
+{
+  std::string type_name = read_string();
+  std::string module_name = read_string();
+  int id;
+  _in >> id;
+  assert(_types.count(id) == 0);
+  try {
+    lua["require"](module_name);
+  } catch(sol::error e) {
+    std::cerr << "[WARN] Module \"" << module_name << "\" could not be loaded."
+              << " Data is safe, but some class members will not be available."
+              << std::endl;
+    _types[id] = lua.create_table();
+    return;
+  }
+  try {
+    sol::table metatable = lua[type_name];
+    _types[id] = metatable;
+    if (metatable["__class"].get<std::string>() != type_name) {
+      std::cerr << "[WARN] Class \"" << type_name << "\" could be loaded,"
+                << " but was renamed to \""
+                << metatable["__class"].get<std::string>() << "\""
+                << std::endl;
+    }
+    if (metatable["__module"].get<std::string>() != module_name) {
+      std::cerr << "[WARN] Module \"" << module_name << "\" could be loaded,"
+                << " but was renamed to \""
+                << metatable["__module"].get<std::string>() << "\""
+                << std::endl;
+    }
+  } catch(sol::error e) {
+    std::cerr << "[WARN] Class \"" << type_name << "\" could not be loaded."
+              << " Data is safe, but class members will not be available."
+              << std::endl;
+    _types[id] = lua.create_table();
+    return;
+  }
+}
+
 void unserializer::read_table_contents(sol::state &lua, sol::table &t)
 {
+  // As the metatable can prevent adding new data, we need to set it at the very
+  // end. As we can read it any time, we need to save it temporarily.
+  bool has_metatable = false;
+  sol::table metatable;
+
   using detail::opcode;
   while (true) {
     opcode code;
@@ -143,9 +215,20 @@ void unserializer::read_table_contents(sol::state &lua, sol::table &t)
 
     switch (code) {
     case opcode::end:
+      // Set the metatable if there was one.
+      if (has_metatable) {
+        t[sol::metatable_key] = metatable;
+      }
       return;
     case opcode::new_name:
       read_new_name();
+      break;
+    case opcode::new_type:
+      read_new_type(lua);
+      break;
+    case opcode::metatable:
+      metatable = read_type_id();
+      has_metatable = true;
       break;
     case opcode::named_false:
       t[read_name_id()] = false;

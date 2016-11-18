@@ -31,6 +31,7 @@ int main(int argc, char **argv)
     uns.read(lua, e);
     std::cout << "=== Next event ===\n";
     print_table(e);
+    std::cout << "\n";
   }
 
   return 0;
@@ -41,8 +42,17 @@ int main(int argc, char **argv)
  */
 void print_table(const sol::table &t, const std::string &indent)
 {
+  // Print type information if it's in the metatable
+  if (t[sol::metatable_key] && t[sol::metatable_key]["__class"] &&
+      t[sol::metatable_key]["__module"]) {
+    std::string class_name = t[sol::metatable_key]["__class"];
+    std::string module_name = t[sol::metatable_key]["__module"];
+    std::cout << module_name << "." << class_name << " ";
+  }
+  std::cout << "{\n";
+
   t.for_each([indent](const sol::object &key, const sol::object &value) {
-    std::cout << indent;
+    std::cout << indent << "  ";
     // Print the key
     switch (key.get_type()) {
     case sol::type::boolean:
@@ -60,9 +70,10 @@ void print_table(const sol::table &t, const std::string &indent)
     }
     // Print the value
     std::cout << " = ";
-    print_value(value, indent);
+    print_value(value, indent + "  ");
     std::cout << ",\n";
   });
+  std::cout << indent << "}";
 }
 
 /*
@@ -83,9 +94,7 @@ void print_value(const sol::object &v, const std::string &indent)
     std::cout << "\"" << v.as<std::string>() << "\"";
     break;
   case sol::type::table:
-    std::cout << "{\n";
-    print_table(v.as<sol::table>(), indent + "  ");
-    std::cout << indent << "}";
+    print_table(v.as<sol::table>(), indent);
     break;
   default:
     // Other Lua data types are unsupported.

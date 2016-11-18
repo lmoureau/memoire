@@ -29,18 +29,18 @@ void serializer::print_string(const std::string &str)
 
 void serializer::print_table_contents(const sol::table &t)
 {
-  for (auto &x : t) {
-    sol::type type = x.first.get_type();
+  t.for_each([this](const sol::object &key, const sol::object &value) {
+    sol::type type = key.get_type();
     // Only numbers and strings are allowed as indices for serialization
     assert(type == sol::type::number || type == sol::type::string);
 
     if (type == sol::type::string) {
-      print_value(x.first.as<std::string>(), x.second);
+      print_value(key.as<std::string>(), value);
     } else {
       // sol::type::number
-      print_value(x.first.as<double>(), x.second);
+      print_value(key.as<double>(), value);
     }
-  }
+  });
 }
 
 void serializer::print_value(double id, const sol::object &v)

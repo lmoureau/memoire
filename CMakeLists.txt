@@ -46,7 +46,7 @@ add_executable(memoire
   qcustomplot.cpp
   run.cpp
   run_config.cpp)
-# Qt
+# Luajit
 target_link_libraries(memoire luajit-5.1)
 # Qt
 target_link_libraries(memoire Qt4::QtGui)

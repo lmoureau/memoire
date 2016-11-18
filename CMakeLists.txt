@@ -58,4 +58,12 @@ target_link_libraries(memoire ${ROOT_LIBS})
 add_executable(dump dump.cpp serializer.cpp)
 target_link_libraries(dump luajit-5.1)
 
+# Simple tool to read events from a ROOT file
+add_executable(readroot readroot.cpp
+  castor.cpp
+  event.cpp
+  parsers.cpp
+  serializer.cpp)
+target_link_libraries(readroot ${ROOT_LIBS} luajit-5.1)
+
 install(TARGETS memoire dump RUNTIME DESTINATION bin)

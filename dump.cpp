@@ -41,18 +41,18 @@ int main(int argc, char **argv)
  */
 void print_table(const sol::table &t, const std::string &indent)
 {
-  for (const auto &pair: t) {
+  t.for_each([](const sol::object &key, const sol::object &value) {
     std::cout << indent;
     // Print the key
-    switch (pair.first.get_type()) {
+    switch (key.get_type()) {
     case sol::type::boolean:
-      std::cout << "[" << pair.first.as<bool>() << "]";
+      std::cout << "[" << key.as<bool>() << "]";
       break;
     case sol::type::number:
-      std::cout << "[" << pair.first.as<double>() << "]";
+      std::cout << "[" << key.as<double>() << "]";
       break;
     case sol::type::string:
-      std::cout << pair.first.as<std::string>();
+      std::cout << key.as<std::string>();
       break;
     default:
       std::cout << "<unsupported>";
@@ -60,9 +60,9 @@ void print_table(const sol::table &t, const std::string &indent)
     }
     // Print the value
     std::cout << " = ";
-    print_value(pair.second, indent);
+    print_value(value, indent);
     std::cout << ",\n";
-  }
+  });
 }
 
 /*

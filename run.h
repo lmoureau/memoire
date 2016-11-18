@@ -12,6 +12,7 @@
 #include "event.h"
 #include "histogram.h"
 #include "event_source.h"
+#include "serializer.h"
 
 class run
 {
@@ -46,6 +47,8 @@ private:
 
   std::shared_ptr<sol::state> _lua;
   std::vector<sol::function> _lua_cuts;
+
+  serializer _out;
 
 public:
   explicit run();

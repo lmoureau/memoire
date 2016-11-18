@@ -1,7 +1,10 @@
 #include "run.h"
 
+#include <iostream>
+
 run::run() :
-  _lua(std::make_shared<sol::state>())
+  _lua(std::make_shared<sol::state>()),
+  _out(std::cout)
 {
   _lua->open_libraries(sol::lib::base,
                        sol::lib::math,
@@ -65,6 +68,8 @@ void run::process_event(event_source *in)
   in->fill_rec(*_lua, e);
   bool has_rec = in->has_rec();
   const event &rec = has_rec ? in->rec() : event();
+
+  _out.write(e);
 
   bool passes_cuts = true;
   if (has_rec) {

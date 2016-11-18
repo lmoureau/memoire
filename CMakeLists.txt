@@ -45,7 +45,8 @@ add_executable(memoire
   parsers.cpp
   qcustomplot.cpp
   run.cpp
-  run_config.cpp)
+  run_config.cpp
+  serializer.cpp)
 # Luajit
 target_link_libraries(memoire luajit-5.1)
 # Qt

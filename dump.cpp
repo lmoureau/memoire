@@ -41,7 +41,7 @@ int main(int argc, char **argv)
  */
 void print_table(const sol::table &t, const std::string &indent)
 {
-  t.for_each([](const sol::object &key, const sol::object &value) {
+  t.for_each([indent](const sol::object &key, const sol::object &value) {
     std::cout << indent;
     // Print the key
     switch (key.get_type()) {

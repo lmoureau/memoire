@@ -31,9 +31,9 @@ void cached_event_source::fill_rec(sol::state &lua, sol::table &event)
   _in->fill_rec(lua, event);
 }
 
-void cached_event_source::prepare(sol::state &lua, sol::table &event)
+void cached_event_source::prepare(sol::state &lua)
 {
-  _in->prepare(lua, event);
+  _in->prepare(lua);
 }
 
 void cached_event_source::read()

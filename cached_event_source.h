@@ -20,7 +20,7 @@ public:
 
   bool end();
   void read();
-  void prepare(sol::state &lua, sol::table &event);
+  void prepare(sol::state &lua);
   void fill_rec(sol::state &lua, sol::table &event);
   const event &rec();
   const event &gen();

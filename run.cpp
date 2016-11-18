@@ -60,9 +60,9 @@ run::result run::operator() (event_source *in)
 
 void run::process_event(event_source *in)
 {
+  in->prepare(*_lua);
   sol::table e = _lua->create_table();
   (*_lua)["e"] = e;
-  in->prepare(*_lua, e);
   bool has_gen = in->has_gen();
   const event &gen = has_gen ? in->gen() : event();
   in->fill_rec(*_lua, e);

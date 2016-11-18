@@ -322,7 +322,7 @@ void hlt_parser::read()
   _d->current++;
 }
 
-void hlt_parser::prepare(sol::state &lua, sol::table &event)
+void hlt_parser::prepare(sol::state &lua)
 {
   lua.script("require(\"lorentz\")");
 }

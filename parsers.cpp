@@ -331,25 +331,28 @@ void hlt_parser::fill_rec(sol::state &lua, sol::table &event)
 {
   event["castor_energy"] = _d->rec.castor_status.energy();
 
-  event["ecal"] = lua.create_table();
-  event["ecal"]["bp"] = _d->rec.ecal.barrel.plus;
-  event["ecal"]["bm"] = _d->rec.ecal.barrel.minus;
-  event["ecal"]["ep"] = _d->rec.ecal.endcap.plus;
-  event["ecal"]["em"] = _d->rec.ecal.endcap.minus;
+  auto ecal = event["ecal"];
+  ecal = lua.create_table();
+  ecal["bp"] = _d->rec.ecal.barrel.plus;
+  ecal["bm"] = _d->rec.ecal.barrel.minus;
+  ecal["ep"] = _d->rec.ecal.endcap.plus;
+  ecal["em"] = _d->rec.ecal.endcap.minus;
 
-  event["hcal"] = lua.create_table();
-  event["hcal"]["bp"] = _d->rec.hcal.barrel.plus;
-  event["hcal"]["bm"] = _d->rec.hcal.barrel.minus;
-  event["hcal"]["ep"] = _d->rec.hcal.endcap.plus;
-  event["hcal"]["em"] = _d->rec.hcal.endcap.minus;
-  event["hcal"]["fp"] = _d->rec.hcal.forward.plus;
-  event["hcal"]["fm"] = _d->rec.hcal.forward.minus;
+  auto hcal = event["ecal"];
+  hcal = lua.create_table();
+  hcal["bp"] = _d->rec.hcal.barrel.plus;
+  hcal["bm"] = _d->rec.hcal.barrel.minus;
+  hcal["ep"] = _d->rec.hcal.endcap.plus;
+  hcal["em"] = _d->rec.hcal.endcap.minus;
+  hcal["fp"] = _d->rec.hcal.forward.plus;
+  hcal["fm"] = _d->rec.hcal.forward.minus;
 
-  event["tracks"] = lua.create_table();
+  auto tracks = event["tracks"];
+  tracks = lua.create_table();
   for (int i = 0; i < _d->ntracks; ++i) {
     lorentz::vec p = lorentz::vec::m_r_phi_theta(MASS, _d->p[i],
                                                  _d->phi[i], _d->lambda[i]);
-    event["tracks"][i] = lua.create_table();
+    tracks[i] = lua.create_table();
     sol::table lua_p = lua["vec"]["new"](p.t(), p.x(), p.y(), p.z());
     sol::table track = lua.create_table();
     track["p"] = lua_p;
@@ -359,9 +362,9 @@ void hlt_parser::fill_rec(sol::state &lua, sol::table &event)
     track["x"] = _d->trkx[i];
     track["y"] = _d->trky[i];
     track["z"] = _d->trkz[i];
-    event["tracks"][i] = track;
+    tracks[i] = track;
   }
-  event["tracks"]["n"] = _d->ntracks;
+  tracks["n"] = _d->ntracks;
 }
 
 const event &hlt_parser::gen()

@@ -66,4 +66,8 @@ add_executable(readroot readroot.cpp
   serializer.cpp)
 target_link_libraries(readroot ${ROOT_LIBS} luajit-5.1)
 
+# Simple tool to run code on an event stream
+add_executable(process process.cpp serializer.cpp)
+target_link_libraries(process luajit-5.1)
+
 install(TARGETS memoire dump RUNTIME DESTINATION bin)

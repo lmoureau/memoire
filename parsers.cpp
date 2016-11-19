@@ -289,7 +289,7 @@ hlt_parser::hlt_parser(const std::string &filename) :
 
 bool hlt_parser::end()
 {
-  return _d->current >= 4;//_d->count;
+  return _d->current >= _d->count;
 }
 
 void hlt_parser::read()

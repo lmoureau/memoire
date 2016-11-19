@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     }
     lua_e = e;
     sol::object result = program();
-    if (result.get_type() == sol::type::boolean && result.as<bool>()) {
+    if (result.get_type() != sol::type::boolean || result.as<bool>()) {
       ser.write(lua_e);
     }
   }

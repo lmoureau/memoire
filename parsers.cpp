@@ -352,7 +352,7 @@ void hlt_parser::fill_rec(sol::state &lua, sol::table &event)
   for (int i = 0; i < _d->ntracks; ++i) {
     lorentz::vec p = lorentz::vec::m_r_phi_theta(MASS, _d->p[i],
                                                  _d->phi[i], _d->lambda[i]);
-    tracks[i] = lua.create_table();
+    tracks[i + 1] = lua.create_table();
     sol::table lua_p = lua["vec"]["new"](p.t(), p.x(), p.y(), p.z());
     sol::table track = lua.create_table();
     track["p"] = lua_p;

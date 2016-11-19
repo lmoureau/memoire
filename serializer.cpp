@@ -5,16 +5,16 @@
 void serializer::write(const sol::table &event)
 {
   print_table_contents(event);
-  _out << "0\n";
+  print_opcode(detail::opcode::end);
 }
 
 int serializer::name_id(const std::string &name)
 {
   if (_names.count(name) == 0) {
     int id = _names.size();
-    _out << "1 ";
+    print_opcode(detail::opcode::new_name);
     print_string(name);
-    _out << id << " ";
+    print_number(id);
     _names.insert(std::make_pair(name, id));
     return id;
   } else {
@@ -22,9 +22,25 @@ int serializer::name_id(const std::string &name)
   }
 }
 
+void serializer::print_number(double value)
+{
+  _out.write((char *) &value, sizeof(double));
+}
+
+void serializer::print_number(int value)
+{
+  _out.write((char *) &value, sizeof(int));
+}
+
+void serializer::print_opcode(detail::opcode code)
+{
+  _out.put((unsigned char) code);
+}
+
 void serializer::print_string(const std::string &str)
 {
-  _out << str.size() << " " << str << " ";
+  print_number((int) str.size());
+  _out.write(str.data(), str.size());
 }
 
 void serializer::print_table_contents(const sol::table &t)
@@ -36,16 +52,16 @@ void serializer::print_table_contents(const sol::table &t)
     std::string module_name = t[sol::metatable_key]["__module"];
     if (_types.count(class_name + "@" + module_name) == 0) {
       // Print type infomation
-      _out << "2 ";
+      print_opcode(detail::opcode::new_type);
       print_string(class_name);
       print_string(module_name);
       int id = _types.size();
-      _out << id << " ";
+      print_number(id);
       // Add the type to the table
       _types[class_name + "@" + module_name] = id;
     }
-    int id = _types.at(class_name + "@" + module_name);
-    std::cout << "3 " << id << " ";
+    print_opcode(detail::opcode::metatable);
+    print_number(_types.at(class_name + "@" + module_name));
   }
   // Print values
   t.for_each([this](const sol::object &key, const sol::object &value) {
@@ -67,19 +83,25 @@ void serializer::print_value(double id, const sol::object &v)
   sol::type type = v.get_type();
   if (type == sol::type::boolean) {
     if (v.as<bool>()) {
-      _out << "21 " << id << " ";
+      print_opcode(detail::opcode::array_true);
+      print_number(id);
     } else {
-      _out << "20 " << id << " ";
+      print_opcode(detail::opcode::array_false);
+      print_number(id);
     }
   } else if (type == sol::type::number) {
-    _out << "22 " << id << " " << v.as<double>() << " ";
+    print_opcode(detail::opcode::array_number);
+    print_number(id);
+    print_number(v.as<double>());
   } else if (type == sol::type::string) {
-    _out << "23 " << id << " ";
+    print_opcode(detail::opcode::array_string);
+    print_number(id);
     print_string(v.as<std::string>());
   } else if (type == sol::type::table) {
-    _out << "24 " << id << " "; // table begin
+    print_opcode(detail::opcode::array_table);
+    print_number(id);
     print_table_contents(v.as<sol::table>());
-    _out << "0 "; // end
+    print_opcode(detail::opcode::end);
   } else {
     throw 0;
   }
@@ -91,19 +113,25 @@ void serializer::print_value(const std::string &name, const sol::object &v)
   sol::type type = v.get_type();
   if (type == sol::type::boolean) {
     if (v.as<bool>()) {
-      _out << "11 " << id << " ";
+      print_opcode(detail::opcode::named_true);
+      print_number(id);
     } else {
-      _out << "10 " << id << " ";
+      print_opcode(detail::opcode::named_false);
+      print_number(id);
     }
   } else if (type == sol::type::number) {
-    _out << "12 " << id << " " << v.as<double>() << " ";
+    print_opcode(detail::opcode::named_number);
+    print_number(id);
+    print_number(v.as<double>());
   } else if (type == sol::type::string) {
-    _out << "13 " << id << " ";
+    print_opcode(detail::opcode::named_string);
+    print_number(id);
     print_string(v.as<std::string>());
   } else if (type == sol::type::table) {
-    _out << "14 " << id << " "; // table begin
+    print_opcode(detail::opcode::named_table);
+    print_number(id);
     print_table_contents(v.as<sol::table>());
-    _out << "0 "; // end
+    print_opcode(detail::opcode::end);
   } else {
     throw 0;
   }
@@ -115,35 +143,43 @@ void unserializer::read(sol::state &lua, sol::table &event, bool &eof)
   read_table_contents(lua, event, &eof);
 }
 
-double unserializer::read_id()
+double unserializer::read_double()
 {
   double id;
-  _in >> id;
+  _in.read((char *) &id, sizeof(double));
+  return id;
+}
+
+double unserializer::read_id()
+{
+  return read_double();
+}
+
+int unserializer::read_int()
+{
+  int id;
+  _in.read((char *) &id, sizeof(int));
   return id;
 }
 
 std::string unserializer::read_name_id()
 {
-  int name_id;
-  _in >> name_id;
+  int name_id = read_int();
   assert(_names.count(name_id) != 0);
   return _names.at(name_id);
 }
 
 std::string unserializer::read_string()
 {
-  unsigned length;
-  _in >> length;
-  std::string data;
-  _in >> data; // TODO spaces in strings
-  assert(data.size() == length);
+  unsigned length = read_int();
+  std::string data(length, ' ');
+  _in.read(&data[0], length);
   return data;
 }
 
 sol::table &unserializer::read_type_id()
 {
-  int type_id;
-  _in >> type_id;
+  int type_id = read_int();
   assert(_types.count(type_id) != 0);
   return _types.at(type_id);
 }
@@ -151,8 +187,7 @@ sol::table &unserializer::read_type_id()
 void unserializer::read_new_name()
 {
   std::string name = read_string();
-  int id;
-  _in >> id;
+  int id = read_int();
   assert(_names.count(id) == 0);
   _names.insert(std::make_pair(id, name));
 }
@@ -161,8 +196,7 @@ void unserializer::read_new_type(sol::state &lua)
 {
   std::string type_name = read_string();
   std::string module_name = read_string();
-  int id;
-  _in >> id;
+  int id = read_int();
   assert(_types.count(id) == 0);
   try {
     lua["require"](module_name);
@@ -213,11 +247,10 @@ void unserializer::read_table_contents(sol::state &lua, sol::table &t,
 
   using detail::opcode;
   while (true) {
-    opcode code;
-    _in >> (int&) code;
+    opcode code = (opcode) _in.get();
 
     std::string name;
-    double id, value;
+    double id;
     sol::table tab;
 
     switch (code) {
@@ -248,8 +281,7 @@ void unserializer::read_table_contents(sol::state &lua, sol::table &t,
     case opcode::named_number:
       ref_eof = false;
       name = read_name_id();
-      _in >> value;
-      t[name] = value;
+      t[name] = read_double();
       break;
     case opcode::named_string:
       ref_eof = false;
@@ -274,8 +306,7 @@ void unserializer::read_table_contents(sol::state &lua, sol::table &t,
     case opcode::array_number:
       ref_eof = false;
       id = read_id();
-      _in >> value;
-      t[id] = value;
+      t[id] = read_double();
       break;
     case opcode::array_string:
       ref_eof = false;

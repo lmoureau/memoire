@@ -40,6 +40,9 @@ public:
 
 private:
   int name_id(const std::string &name);
+  void print_number(double value);
+  void print_number(int value);
+  void print_opcode(detail::opcode code);
   void print_string(const std::string &str);
   void print_table_contents(const sol::table &t);
   void print_value(double id, const sol::object &v);
@@ -57,7 +60,9 @@ public:
   void read(sol::state &lua, sol::table &event, bool &eof);
 
 private:
+  double read_double();
   double read_id();
+  int read_int();
   std::string read_name_id();
   std::string read_string();
   sol::table &read_type_id();

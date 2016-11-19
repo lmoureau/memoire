@@ -2,7 +2,7 @@
 #define SERIALIZER_H
 
 #include <iostream>
-#include <unordered_map>
+#include <map>
 #include <memory>
 
 #include "sol.hpp"
@@ -31,8 +31,8 @@ namespace detail
 class serializer
 {
   std::ostream &_out;
-  std::unordered_map<std::string, int> _names;
-  std::unordered_map<std::string, int> _types;
+  std::map<std::string, int> _names;
+  std::map<std::string, int> _types;
 public:
   explicit serializer(std::ostream &out) : _out(out) {}
 
@@ -52,8 +52,8 @@ private:
 class unserializer
 {
   std::istream &_in;
-  std::unordered_map<int, std::string> _names;
-  std::unordered_map<int, sol::table> _types;
+  std::map<int, std::string> _names;
+  std::map<int, sol::table> _types;
 public:
   explicit unserializer(std::istream &in) : _in(in) {}
 

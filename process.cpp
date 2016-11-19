@@ -35,9 +35,12 @@ int main(int argc, char **argv)
   serializer ser(std::cout);
   auto lua_e = lua["e"];
   bool eof = false;
-  while (std::cin && std::cout && !eof) {
+  while (std::cin && std::cout) {
     sol::table e = lua.create_table();
     uns.read(lua, e, eof);
+    if (eof) {
+      break;
+    }
     lua_e = e;
     sol::object result = program();
     if (result.get_type() == sol::type::boolean && result.as<bool>()) {

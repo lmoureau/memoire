@@ -247,7 +247,12 @@ void unserializer::read_table_contents(sol::state &lua, sol::table &t,
 
   using detail::opcode;
   while (true) {
-    opcode code = (opcode) _in.get();
+    char c;
+    _in.get(c);
+    if (!_in.good()) {
+      return;
+    }
+    opcode code = (opcode) c;
 
     std::string name;
     double id;

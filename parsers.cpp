@@ -362,7 +362,7 @@ void hlt_parser::fill_rec(sol::state &lua, sol::table &event)
     track["x"] = _d->trkx[i];
     track["y"] = _d->trky[i];
     track["z"] = _d->trkz[i];
-    tracks[i] = track;
+    tracks[i + 1] = track;
   }
   tracks["n"] = _d->ntracks;
 }

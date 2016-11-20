@@ -28,7 +28,13 @@ int main(int argc, char **argv)
   lua["package"]["path"] = oldpath + ";./lua/?.lua;../lua/?.lua";
 
   // Load the program
-  sol::function program = lua.load_file(filename);
+  sol::load_result lr = lua.load_file(filename);
+  if (!lr.valid()) {
+    std::cerr << "ERROR: Could not load script: "
+              << lr.get<std::string>() << std::endl;
+    return 2;
+  }
+  sol::protected_function program = lr;
 
   // Read one event at a time and print them all
   unserializer uns(std::cin);
@@ -42,9 +48,15 @@ int main(int argc, char **argv)
       break;
     }
     lua_e = e;
-    sol::object result = program();
-    if (result.get_type() != sol::type::boolean || result.as<bool>()) {
-      ser.write(lua_e);
+    auto result = program();
+    if (result.valid()) {
+      sol::object val = result.get<sol::object>();
+      if (val.get_type() != sol::type::boolean || val.as<bool>()) {
+        ser.write(lua_e);
+      }
+    } else {
+      std::cerr << "ERROR: " << result.get<sol::error>().what() << std::endl;
+      return 3;
     }
   }
 

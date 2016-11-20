@@ -42,7 +42,7 @@ function vec.__div(a, b)
 end
 
 function vec.__unm(a)
-  return vec.new(a.t, a.x, a.y, a.z)
+  return vec.new(-a.t, -a.x, -a.y, -a.z)
 end
 
 function vec.__eq(a, b)
@@ -53,21 +53,21 @@ function vec.__tostring(a)
   return "(" .. a.t .. ", " .. a.x .. ", " .. a.y .. ", " .. a.z .. ")"
 end
 
-function vec.__index(i)
-  if     i == 0 then return t
-  elseif i == 1 then return x
-  elseif i == 1 then return y
-  elseif i == 1 then return z
-  else error()
+function vec.__index(self, i)
+  if     i == 0 then return self.t
+  elseif i == 1 then return self.x
+  elseif i == 2 then return self.y
+  elseif i == 3 then return self.z
+  else return vec[i]
   end
 end
 
-function vec.__newindex(i, a)
-  if     i == 0 then t = a
-  elseif i == 1 then x = a
-  elseif i == 1 then y = a
-  elseif i == 1 then z = a
-  else error()
+function vec.__newindex(self, i, a)
+  if     i == 0 then self.t = a
+  elseif i == 1 then self.x = a
+  elseif i == 2 then self.y = a
+  elseif i == 3 then self.z = a
+  else error("vec: index out of bounds: " .. a, -1)
   end
 end
 

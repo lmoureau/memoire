@@ -77,24 +77,29 @@ void print_histogram(const sol::table &t, double umin, double umax, int bins)
   });
 
   // Accumulate
+  double total = 0;
   auto h = hist::histogram(min, max, bins);
-  t.for_each([&h](const sol::object &key, const sol::object &value) {
+  t.for_each([&](const sol::object &key, const sol::object &value) {
     if (key.get_type() == sol::type::number &&
         value.get_type() == sol::type::number) {
       h.bin(key.as<double>(), value.as<double>());
+      total += value.as<double>();
     }
   });
 
   // Find maximum value
-  double maxy = 0;
+  double maxy = 0, shown = 0;
   auto end = h.end();
   for (auto it = h.begin(); it != end; ++it) {
     if (*it > maxy) {
       maxy = *it;
+      shown += *it;
     }
   }
 
   // Print
+  std::cout << "Showing " << shown << " out of " << total << ".\n";
+
   auto it = h.begin();
   for (int i = 0; it != end; ++it, ++i) {
     std::cout.width(5);

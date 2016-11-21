@@ -54,6 +54,10 @@ target_link_libraries(memoire Qt4::QtGui)
 # ROOT
 target_link_libraries(memoire ${ROOT_LIBS})
 
+# Simple tool to create histograms from an event stream
+add_executable(accumulate accumulate.cpp serializer.cpp)
+target_link_libraries(accumulate luajit-5.1)
+
 # Simple tool to dump events to stdout
 add_executable(dump dump.cpp serializer.cpp)
 target_link_libraries(dump luajit-5.1)

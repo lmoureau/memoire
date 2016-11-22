@@ -78,6 +78,14 @@ function vec.new(t, x, y, z)
   return setmetatable({ t = t or 0, x = x or 0, y = y or 0, z = z or 0 }, vec)
 end
 
+function vec.m_e_phi_eta(m, e, phi, eta)
+  local p = math.sqrt(e^2 - m^2)
+  local pt = p / math.cosh(eta)
+  local v = vec.new(e, pt * math.cos(phi), pt * math.sin(phi), p * math.tanh(eta))
+--   error("This is good")
+  return v
+end
+
 function vec:clone()
   return vec.new(self.t, self.x, self.y, self.z)
 end

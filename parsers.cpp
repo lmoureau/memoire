@@ -270,21 +270,38 @@ hlt_parser::hlt_parser(const std::string &filename) :
 
   _d->file->GetObject("HBHERecHitTree", _d->hbhe_tree);
   _d->hbhe_tree->SetBranchAddress("HEEnergyMaxPlus", &_d->rec.hcal.endcap.plus);
+  _d->hbhe_tree->SetBranchAddress("HEEtaMaxPlus", &_d->rec.hcal.endcap.eta_plus);
+  _d->hbhe_tree->SetBranchAddress("HEPhiMaxPlus", &_d->rec.hcal.endcap.phi_plus);
   _d->hbhe_tree->SetBranchAddress("HEEnergyMaxMinus", &_d->rec.hcal.endcap.minus);
+  _d->hbhe_tree->SetBranchAddress("HEEtaMaxMinus", &_d->rec.hcal.endcap.eta_minus);
+  _d->hbhe_tree->SetBranchAddress("HEPhiMaxMinus", &_d->rec.hcal.endcap.phi_minus);
   _d->hbhe_tree->SetBranchAddress("HBEnergyMaxPlus", &_d->rec.hcal.barrel.plus);
-  _d->hbhe_tree->SetBranchAddress("HBEnergyMaxMinus", &_d->rec.hcal.barrel.minus);
+  _d->hbhe_tree->SetBranchAddress("HBEtaMaxPlus", &_d->rec.hcal.barrel.eta_plus);
+  _d->hbhe_tree->SetBranchAddress("HBPhiMaxMinus", &_d->rec.hcal.barrel.phi_minus);
 
   _d->file->GetObject("HFRecHitTree", _d->hf_tree);
   _d->hf_tree->SetBranchAddress("HFEnergyMaxPlus", &_d->rec.hcal.forward.plus);
+  _d->hf_tree->SetBranchAddress("HFEtaMaxPlus", &_d->rec.hcal.forward.eta_plus);
+  _d->hf_tree->SetBranchAddress("HFPhiMaxPlus", &_d->rec.hcal.forward.phi_plus);
   _d->hf_tree->SetBranchAddress("HFEnergyMaxMinus", &_d->rec.hcal.forward.minus);
+  _d->hf_tree->SetBranchAddress("HFEtaMaxMinus", &_d->rec.hcal.forward.eta_minus);
+  _d->hf_tree->SetBranchAddress("HFPhiMaxMinus", &_d->rec.hcal.forward.phi_minus);
 
   _d->file->GetObject("EERecHitTree", _d->ee_tree);
   _d->ee_tree->SetBranchAddress("EEEnergyMaxPlus", &_d->rec.ecal.endcap.plus);
+  _d->ee_tree->SetBranchAddress("EEEtaMaxPlus", &_d->rec.ecal.endcap.eta_plus);
+  _d->ee_tree->SetBranchAddress("EEPhiMaxPlus", &_d->rec.ecal.endcap.phi_plus);
   _d->ee_tree->SetBranchAddress("EEEnergyMaxMinus", &_d->rec.ecal.endcap.minus);
+  _d->ee_tree->SetBranchAddress("EEEtaMaxMinus", &_d->rec.ecal.endcap.eta_minus);
+  _d->ee_tree->SetBranchAddress("EEPhiMaxMinus", &_d->rec.ecal.endcap.phi_minus);
 
   _d->file->GetObject("EBRecHitTree", _d->eb_tree);
   _d->eb_tree->SetBranchAddress("EBEnergyMaxPlus", &_d->rec.ecal.barrel.plus);
+  _d->eb_tree->SetBranchAddress("EBEtaMaxPlus", &_d->rec.ecal.barrel.eta_plus);
+  _d->eb_tree->SetBranchAddress("EBPhiMaxPlus", &_d->rec.ecal.barrel.phi_plus);
   _d->eb_tree->SetBranchAddress("EBEnergyMaxMinus", &_d->rec.ecal.barrel.minus);
+  _d->eb_tree->SetBranchAddress("EBEtaMaxMinus", &_d->rec.ecal.barrel.eta_minus);
+  _d->eb_tree->SetBranchAddress("EBPhiMaxMinus", &_d->rec.ecal.barrel.phi_minus);
 }
 
 bool hlt_parser::end()
@@ -333,19 +350,40 @@ void hlt_parser::fill_rec(sol::state &lua, sol::table &event)
 
   auto ecal = event["ecal"];
   ecal = lua.create_table();
-  ecal["bp"] = _d->rec.ecal.barrel.plus;
-  ecal["bm"] = _d->rec.ecal.barrel.minus;
-  ecal["ep"] = _d->rec.ecal.endcap.plus;
-  ecal["em"] = _d->rec.ecal.endcap.minus;
+  auto m_e_phi_eta = lua["vec"]["m_e_phi_eta"];
+  ecal["bp"] = m_e_phi_eta(0, _d->rec.ecal.barrel.plus,
+                              _d->rec.ecal.barrel.phi_plus,
+                              _d->rec.ecal.barrel.eta_plus).get<sol::table>();
+  ecal["bm"] = m_e_phi_eta(0, _d->rec.ecal.barrel.minus,
+                              _d->rec.ecal.barrel.phi_minus,
+                              _d->rec.ecal.barrel.eta_minus).get<sol::table>();
+  ecal["ep"] = m_e_phi_eta(0, _d->rec.ecal.endcap.plus,
+                              _d->rec.ecal.endcap.phi_plus,
+                              _d->rec.ecal.endcap.eta_plus).get<sol::table>();
+  ecal["em"] = m_e_phi_eta(0, _d->rec.ecal.endcap.minus,
+                              _d->rec.ecal.endcap.phi_minus,
+                              _d->rec.ecal.endcap.eta_minus).get<sol::table>();
 
-  auto hcal = event["ecal"];
+  auto hcal = event["hcal"];
   hcal = lua.create_table();
-  hcal["bp"] = _d->rec.hcal.barrel.plus;
-  hcal["bm"] = _d->rec.hcal.barrel.minus;
-  hcal["ep"] = _d->rec.hcal.endcap.plus;
-  hcal["em"] = _d->rec.hcal.endcap.minus;
-  hcal["fp"] = _d->rec.hcal.forward.plus;
-  hcal["fm"] = _d->rec.hcal.forward.minus;
+  hcal["bp"] = m_e_phi_eta(0, _d->rec.hcal.barrel.plus,
+                              _d->rec.hcal.barrel.phi_plus,
+                              _d->rec.hcal.barrel.eta_plus).get<sol::table>();
+  hcal["bm"] = m_e_phi_eta(0, _d->rec.hcal.barrel.minus,
+                              _d->rec.hcal.barrel.phi_minus,
+                              _d->rec.hcal.barrel.eta_minus).get<sol::table>();
+  hcal["ep"] = m_e_phi_eta(0, _d->rec.hcal.endcap.plus,
+                              _d->rec.hcal.endcap.phi_plus,
+                              _d->rec.hcal.endcap.eta_plus).get<sol::table>();
+  hcal["em"] = m_e_phi_eta(0, _d->rec.hcal.endcap.minus,
+                              _d->rec.hcal.endcap.phi_minus,
+                              _d->rec.hcal.endcap.eta_minus).get<sol::table>();
+  hcal["fp"] = m_e_phi_eta(0, _d->rec.hcal.forward.plus,
+                              _d->rec.hcal.forward.phi_plus,
+                              _d->rec.hcal.forward.eta_plus).get<sol::table>();
+  hcal["fm"] = m_e_phi_eta(0, _d->rec.hcal.forward.minus,
+                              _d->rec.hcal.forward.phi_minus,
+                              _d->rec.hcal.forward.eta_minus).get<sol::table>();
 
   auto tracks = event["tracks"];
   tracks = lua.create_table();

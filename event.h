@@ -25,6 +25,8 @@ struct track
 struct plus_minus
 {
   double plus, minus;
+  double eta_plus, eta_minus;
+  double phi_plus, phi_minus;
 };
 
 struct barrel_endcap

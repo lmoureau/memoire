@@ -54,28 +54,31 @@ target_link_libraries(memoire Qt4::QtGui)
 # ROOT
 target_link_libraries(memoire ${ROOT_LIBS})
 
+# I/O utilitites
+add_library(ioutils STATIC histogram_reader.cpp serializer.cpp)
+target_link_libraries(ioutils luajit-5.1)
+
 # Simple tool to create histograms from an event stream
-add_executable(accumulate accumulate.cpp serializer.cpp)
-target_link_libraries(accumulate luajit-5.1)
+add_executable(accumulate accumulate.cpp)
+target_link_libraries(accumulate ioutils)
 
 # Simple tool to dump events to stdout
-add_executable(dump dump.cpp serializer.cpp)
-target_link_libraries(dump luajit-5.1)
+add_executable(dump dump.cpp)
+target_link_libraries(dump ioutils)
 
 # Simple tool to dump histograms to stdout
-add_executable(dumphist dumphist.cpp histogram_reader.cpp serializer.cpp)
-target_link_libraries(dumphist luajit-5.1)
+add_executable(dumphist dumphist.cpp)
+target_link_libraries(dumphist ioutils)
 
 # Simple tool to read events from a ROOT file
 add_executable(readroot readroot.cpp
   castor.cpp
   event.cpp
-  parsers.cpp
-  serializer.cpp)
-target_link_libraries(readroot ${ROOT_LIBS} luajit-5.1)
+  parsers.cpp)
+target_link_libraries(readroot ${ROOT_LIBS} ioutils)
 
 # Simple tool to run code on an event stream
-add_executable(process process.cpp serializer.cpp)
-target_link_libraries(process luajit-5.1)
+add_executable(process process.cpp)
+target_link_libraries(process ioutils)
 
 install(TARGETS memoire dump RUNTIME DESTINATION bin)

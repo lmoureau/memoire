@@ -63,7 +63,7 @@ add_executable(dump dump.cpp serializer.cpp)
 target_link_libraries(dump luajit-5.1)
 
 # Simple tool to dump histograms to stdout
-add_executable(dumphist dumphist.cpp serializer.cpp)
+add_executable(dumphist dumphist.cpp histogram_reader.cpp serializer.cpp)
 target_link_libraries(dumphist luajit-5.1)
 
 # Simple tool to read events from a ROOT file

@@ -58,6 +58,10 @@ target_link_libraries(memoire ${ROOT_LIBS})
 add_library(ioutils STATIC histogram_reader.cpp serializer.cpp)
 target_link_libraries(ioutils luajit-5.1)
 
+# QCustomplot
+add_library(qcustomplot STATIC qcustomplot.cpp)
+target_link_libraries(qcustomplot Qt4::QtGui)
+
 # Simple tool to create histograms from an event stream
 add_executable(accumulate accumulate.cpp)
 target_link_libraries(accumulate ioutils)
@@ -76,6 +80,10 @@ add_executable(readroot readroot.cpp
   event.cpp
   parsers.cpp)
 target_link_libraries(readroot ${ROOT_LIBS} ioutils)
+
+# Simple tool to show an histogram
+add_executable(showhist showhist.cpp)
+target_link_libraries(showhist ioutils qcustomplot)
 
 # Simple tool to run code on an event stream
 add_executable(process process.cpp)

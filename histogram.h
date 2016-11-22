@@ -24,9 +24,9 @@ public:
                        int bin_count);
 
   int operator() (const axis_type &data) const
-  { return std::floor((data - _begin) / _bin_width); }
+  { return std::floor(data / _bin_width - _begin / _bin_width); }
 
-  int bin_count() const { return (_end - _begin) / _bin_width; }
+  int bin_count() const { return _end / _bin_width - _begin / _bin_width; }
   axis_type bin_end(int bin) const { return _begin + bin * _bin_width; }
   axis_type bin_center(int bin) const
   { return _begin + (bin + .5) * _bin_width; }
@@ -55,6 +55,9 @@ private:
 public:
   void bin_overflow(bin_type weight) { _overflow += weight; }
   void bin_underflow(bin_type weight) { _underflow += weight; }
+
+  bin_type underflow() const { return _underflow; }
+  bin_type overflow() const { return _overflow; }
 };
 
 template<typename _axis_type_>
@@ -62,7 +65,7 @@ linear_axis<_axis_type_>::linear_axis(const axis_type &begin,
                                       const axis_type &end, int bin_count) :
   _begin(begin),
   _end(end),
-  _bin_width((_end - _begin) / bin_count)
+  _bin_width(_end / bin_count - _begin / bin_count)
 {}
 
 #ifdef BASIC_HISTOGRAM_PARAMS_DEF

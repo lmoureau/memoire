@@ -25,11 +25,11 @@ int main(int argc, char **argv)
   double max = std::numeric_limits<double>::max();
   int bins = 50;
   if (argc > 2) {
-    min = std::strtod(argv[2], nullptr);
+    min = QString(argv[2]).toDouble();
     if (argc > 3) {
-      max = std::strtod(argv[3], nullptr);
+      max = QString(argv[3]).toDouble();
       if (argc > 4) {
-        bins = std::strtol(argv[4], nullptr, 10);
+        bins = QString(argv[4]).toInt();
       }
     }
   }

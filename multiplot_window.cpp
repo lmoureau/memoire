@@ -122,11 +122,14 @@ QColor multiplot_window::next_color()
 
 void multiplot_window::item_double_clicked(QTreeWidgetItem *item)
 {
-  QString name = qvariant_cast<QString>(item->data(0, Qt::UserRole));
-  if (is_plot_enabled(name)) {
-    disable_plot(name);
-  } else {
-    enable_plot(name);
+  QVariant variant = item->data(0, Qt::UserRole);
+  if (variant.isValid()) {
+    QString name = qvariant_cast<QString>(variant);
+    if (is_plot_enabled(name)) {
+      disable_plot(name);
+    } else {
+      enable_plot(name);
+    }
   }
 }
 

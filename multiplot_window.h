@@ -31,7 +31,6 @@ class multiplot_window : public QMainWindow
   QCustomPlot *_plot;
   QVBoxLayout *_vbox;
   QMap<QString, plot_data> _data;
-  int _last_color = 0;
 
   plot_source::config _config;
 

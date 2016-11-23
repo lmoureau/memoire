@@ -93,6 +93,7 @@ void multiplot_window::update_plots()
     if (data.plottable != nullptr) {
       _plot->removePlottable(data.plottable);
       data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
+      data.plottable->setPen(data.color);
       _plot->addPlottable(data.plottable);
       _plot->xAxis->rescale();
       _plot->yAxis->rescale();

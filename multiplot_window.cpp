@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include <QCheckBox>
 #include <QDir>
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
@@ -175,6 +176,10 @@ QWidget *multiplot_window::create_config_bar()
 
   layout->addStretch(100);
 
+  QCheckBox *check = new QCheckBox(tr("&Log scale"));
+  connect(check, SIGNAL(toggled(bool)), this, SLOT(set_log_scale(bool)));
+  layout->addWidget(check);
+
   return widget;
 }
 
@@ -220,4 +225,10 @@ void multiplot_window::update_bins(int bins)
 {
   _config.bins = bins;
   update_plots();
+}
+
+void multiplot_window::set_log_scale(bool log)
+{
+  _plot->yAxis->setScaleType(log ? QCPAxis::stLogarithmic : QCPAxis::stLinear);
+  _plot->replot();
 }

@@ -54,6 +54,7 @@ private slots:
   void update_min(double min);
   void update_max(double max);
   void update_bins(int bins);
+  void set_log_scale(bool log);
 };
 
 #endif // MULTIPLOT_WINDOW_H

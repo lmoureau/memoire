@@ -1,6 +1,7 @@
 #ifndef MULTIPLOT_WINDOW_H
 #define MULTIPLOT_WINDOW_H
 
+#include <QColor>
 #include <QMainWindow>
 #include <QMap>
 
@@ -23,12 +24,14 @@ class multiplot_window : public QMainWindow
     plot_source *source;
     QTreeWidgetItem *item;
     QCPAbstractPlottable *plottable;
+    QColor color;
   };
 
   QTreeWidget *_tree;
   QCustomPlot *_plot;
   QVBoxLayout *_vbox;
   QMap<QString, plot_data> _data;
+  int _last_color = 0;
 
   plot_source::config _config;
 
@@ -40,6 +43,8 @@ private:
   void enable_plot(const QString &name);
   void disable_plot(const QString &name);
   void update_plots();
+
+  QColor next_color();
 
   QWidget *create_config_bar();
   void populate_tree();

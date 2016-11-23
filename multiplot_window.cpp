@@ -60,6 +60,9 @@ void multiplot_window::enable_plot(const QString &name)
 
   assert(data.plottable == nullptr);
   data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
+  data.color = next_color();
+  data.plottable->setPen(data.color);
+  data.item->setData(0, Qt::TextColorRole, data.color);
   _plot->addPlottable(data.plottable);
   _plot->xAxis->rescale();
   _plot->yAxis->rescale();
@@ -77,6 +80,7 @@ void multiplot_window::disable_plot(const QString &name)
   _plot->removePlottable(data.plottable);
   // removePlottable deletes the plottable for us
   data.plottable = nullptr;
+  data.item->setData(0, Qt::TextColorRole, QVariant());
   _plot->xAxis->rescale();
   _plot->yAxis->rescale();
   _plot->replot();
@@ -94,6 +98,26 @@ void multiplot_window::update_plots()
       _plot->replot();
     }
   }
+}
+
+QColor multiplot_window::next_color()
+{
+  static const QColor colors[] = {
+    Qt::blue, Qt::red, Qt::darkGreen, Qt::magenta, Qt::black
+  };
+  for (auto &color: colors) {
+    bool used = false;
+    for (auto &data: _data) {
+      if (data.plottable != nullptr && data.color == color) {
+        used = true;
+        break;
+      }
+    }
+    if (!used) {
+      return color;
+    }
+  }
+  return colors[0];
 }
 
 void multiplot_window::item_double_clicked(QTreeWidgetItem *item)
@@ -171,7 +195,7 @@ void multiplot_window::populate_tree()
         child->setText(0, hname.c_str());
         child->setData(0, Qt::UserRole, name);
 
-        _data[name] = plot_data{ src, child, nullptr };
+        _data[name] = plot_data{ src, child, nullptr, QColor() };
       }
     }
   }

@@ -74,6 +74,12 @@ target_link_libraries(dump ioutils)
 add_executable(dumphist dumphist.cpp)
 target_link_libraries(dumphist ioutils)
 
+# Advanced tool to create plots with several histograms
+add_executable(multiplot multiplot.cpp
+  multiplot_window.cpp
+  plot_source.cpp)
+target_link_libraries(multiplot ioutils qcustomplot)
+
 # Simple tool to read events from a ROOT file
 add_executable(readroot readroot.cpp
   castor.cpp

@@ -10,11 +10,19 @@
 int main(int argc, char **argv)
 {
   // Read the program file name from the command line.
-  if (argc != 2) {
-    std::cout << "Usage: " << argv[0] << " program.lua" << std::endl;
+  if (argc != 2 && argc != 3) {
+    std::cout << "Usage: " << argv[0] << " [not] program.lua" << std::endl;
     return 1;
   }
-  std::string filename = argv[1];
+  bool negate = false;
+  if (argc == 3 && std::string(argv[1]) == "not") {
+    negate = true;
+  } else if (argc == 3) {
+    // Argument 1 isn't "not"
+    std::cout << "Usage: " << argv[0] << " [not] program.lua" << std::endl;
+    return 1;
+  }
+  std::string filename = argv[argc - 1];
 
   // Setup lua
   sol::state lua;
@@ -51,7 +59,8 @@ int main(int argc, char **argv)
     auto result = program();
     if (result.valid()) {
       sol::object val = result.get<sol::object>();
-      if (val.get_type() != sol::type::boolean || val.as<bool>()) {
+      bool passed = (val.get_type() != sol::type::boolean || val.as<bool>());
+      if (passed == !negate) {
         ser.write(lua_e);
       }
     } else {

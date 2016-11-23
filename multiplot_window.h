@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QMap>
 
+#include "plot_source.h"
+
 class QCustomPlot;
 class QSignalMapper;
 class QTreeWidget;
@@ -11,8 +13,6 @@ class QTreeWidgetItem;
 class QVBoxLayout;
 
 class QCPAbstractPlottable;
-
-class plot_source;
 
 class multiplot_window : public QMainWindow
 {
@@ -30,6 +30,8 @@ class multiplot_window : public QMainWindow
   QVBoxLayout *_vbox;
   QMap<QString, plot_data> _data;
 
+  plot_source::config _config;
+
 public:
   explicit multiplot_window();
 
@@ -37,11 +39,16 @@ private:
   bool is_plot_enabled(const QString &name);
   void enable_plot(const QString &name);
   void disable_plot(const QString &name);
+  void update_plots();
 
+  QWidget *create_config_bar();
   void populate_tree();
 
 private slots:
   void item_double_clicked(QTreeWidgetItem *item);
+  void update_min(double min);
+  void update_max(double max);
+  void update_bins(int bins);
 };
 
 #endif // MULTIPLOT_WINDOW_H

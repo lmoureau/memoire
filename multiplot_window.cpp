@@ -3,20 +3,24 @@
 #include <cassert>
 
 #include <QDir>
+#include <QDoubleSpinBox>
+#include <QHBoxLayout>
 #include <QIcon>
+#include <QLabel>
+#include <QSpinBox>
 #include <QSplitter>
 #include <QSignalMapper>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
 #include "histogram_reader.h"
-#include "plot_source.h"
 #include "qcustomplot.h"
 
 multiplot_window::multiplot_window() :
   _tree(new QTreeWidget),
   _plot(new QCustomPlot),
-  _vbox(new QVBoxLayout)
+  _vbox(new QVBoxLayout),
+  _config(plot_source::config{ 0, 2, 100 })
 {
   QSplitter *splitter = new QSplitter(Qt::Horizontal);
   setCentralWidget(splitter);
@@ -31,6 +35,8 @@ multiplot_window::multiplot_window() :
   QWidget *vboxw = new QWidget;
   vboxw->setLayout(_vbox);
   splitter->addWidget(vboxw);
+
+  _vbox->addWidget(create_config_bar());
 
   _vbox->addWidget(_plot);
   _vbox->setStretchFactor(_plot, 100);
@@ -53,7 +59,7 @@ void multiplot_window::enable_plot(const QString &name)
   data.item->setIcon(0, QIcon::fromTheme("status-ok"));
 
   assert(data.plottable == nullptr);
-  data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis);
+  data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
   _plot->addPlottable(data.plottable);
   _plot->xAxis->rescale();
   _plot->yAxis->rescale();
@@ -76,6 +82,20 @@ void multiplot_window::disable_plot(const QString &name)
   _plot->replot();
 }
 
+void multiplot_window::update_plots()
+{
+  for (auto &data: _data) {
+    if (data.plottable != nullptr) {
+      _plot->removePlottable(data.plottable);
+      data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
+      _plot->addPlottable(data.plottable);
+      _plot->xAxis->rescale();
+      _plot->yAxis->rescale();
+      _plot->replot();
+    }
+  }
+}
+
 void multiplot_window::item_double_clicked(QTreeWidgetItem *item)
 {
   QString name = qvariant_cast<QString>(item->data(0, Qt::UserRole));
@@ -84,6 +104,51 @@ void multiplot_window::item_double_clicked(QTreeWidgetItem *item)
   } else {
     enable_plot(name);
   }
+}
+
+QWidget *multiplot_window::create_config_bar()
+{
+  QWidget *widget = new QWidget;
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->setContentsMargins(0, 0, 0, 0);
+  widget->setLayout(layout);
+
+  QLabel *label = new QLabel(tr("M&in:"));
+  layout->addWidget(label);
+
+  QDoubleSpinBox *box = new QDoubleSpinBox;
+  box->setMinimum(std::numeric_limits<double>::lowest());
+  box->setMaximum(std::numeric_limits<double>::max());
+  box->setValue(_config.min);
+  label->setBuddy(box);
+  connect(box, SIGNAL(valueChanged(double)), this, SLOT(update_min(double)));
+  layout->addWidget(box);
+
+  label = new QLabel(tr("M&ax:"));
+  layout->addWidget(label);
+
+  box = new QDoubleSpinBox;
+  box->setMinimum(std::numeric_limits<double>::lowest());
+  box->setMaximum(std::numeric_limits<double>::max());
+  box->setValue(_config.max);
+  label->setBuddy(box);
+  connect(box, SIGNAL(valueChanged(double)), this, SLOT(update_max(double)));
+  layout->addWidget(box);
+
+  label = new QLabel(tr("&Bins:"));
+  layout->addWidget(label);
+
+  QSpinBox *ibox = new QSpinBox;
+  ibox->setMinimum(1);
+  ibox->setMaximum(1000);
+  ibox->setValue(_config.bins);
+  label->setBuddy(ibox);
+  connect(ibox, SIGNAL(valueChanged(int)), this, SLOT(update_bins(int)));
+  layout->addWidget(ibox);
+
+  layout->addStretch(100);
+
+  return widget;
 }
 
 void multiplot_window::populate_tree()
@@ -110,4 +175,22 @@ void multiplot_window::populate_tree()
       }
     }
   }
+}
+
+void multiplot_window::update_min(double min)
+{
+  _config.min = min;
+  update_plots();
+}
+
+void multiplot_window::update_max(double max)
+{
+  _config.max = max;
+  update_plots();
+}
+
+void multiplot_window::update_bins(int bins)
+{
+  _config.bins = bins;
+  update_plots();
 }

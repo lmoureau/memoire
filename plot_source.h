@@ -10,9 +10,16 @@ class plot_source : public QObject
 {
   Q_OBJECT
 public:
+  struct config
+  {
+    double min, max;
+    int bins;
+  };
+
   explicit plot_source(QObject *parent = nullptr) : QObject(parent) {}
 
-  virtual QCPAbstractPlottable *plot(QCPAxis *x, QCPAxis *y) = 0;
+  virtual QCPAbstractPlottable *plot(QCPAxis *x, QCPAxis *y,
+                                     const config &config) = 0;
 };
 
 class file_plot_source : public plot_source
@@ -21,15 +28,13 @@ class file_plot_source : public plot_source
 
   std::string _file_path;
   std::string _name;
-  const double _min = std::numeric_limits<double>::lowest();
-  const double _max = std::numeric_limits<double>::max();
-  const int _bins = 50;
 
 public:
   explicit file_plot_source(const QString &file_path, const std::string &name,
                             QObject *parent = nullptr);
 
-  QCPAbstractPlottable *plot(QCPAxis *x, QCPAxis *y) override;
+  QCPAbstractPlottable *plot(QCPAxis *x, QCPAxis *y,
+                             const config &config) override;
 };
 
 #endif // PLOT_SOURCE_H

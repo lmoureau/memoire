@@ -44,6 +44,8 @@ multiplot_window::multiplot_window() :
   _plot->axisRect()->setRangeZoom(Qt::Horizontal);
   _plot->axisRect()->setRangeDrag(Qt::Horizontal);
   _plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+  _plot->setAutoAddPlottableToLegend(true);
+  _plot->legend->setVisible(true);
 }
 
 bool multiplot_window::is_plot_enabled(const QString &name)
@@ -61,6 +63,7 @@ void multiplot_window::enable_plot(const QString &name)
 
   assert(data.plottable == nullptr);
   data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
+  data.plottable->setName(name);
   data.color = next_color();
   data.plottable->setPen(data.color);
   data.item->setData(0, Qt::TextColorRole, data.color);
@@ -91,8 +94,10 @@ void multiplot_window::update_plots()
 {
   for (auto &data: _data) {
     if (data.plottable != nullptr) {
+      QString name = data.plottable->name();
       _plot->removePlottable(data.plottable);
       data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
+      data.plottable->setName(name);
       data.plottable->setPen(data.color);
       _plot->addPlottable(data.plottable);
       _plot->xAxis->rescale();
@@ -192,7 +197,6 @@ void multiplot_window::populate_tree()
       QTreeWidgetItem *item = new QTreeWidgetItem();
       _tree->addTopLevelItem(item);
       item->setText(0, info.fileName());
-      item->setExpanded(true);
 
       histogram_reader reader(info.filePath().toStdString());
       auto names = reader.names();

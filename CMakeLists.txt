@@ -31,6 +31,17 @@ find_package(Qt4 REQUIRED QtGui)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 ################################################################################
+# Copy files                                                          #
+################################################################################
+add_custom_target(copy_analysis ALL
+  cp -ru ${CMAKE_SOURCE_DIR}/analysis ${CMAKE_BINARY_DIR}
+  COMMENT "Copying analysis tree")
+
+add_custom_target(copy_lua ALL
+  cp -ru ${CMAKE_SOURCE_DIR}/lua ${CMAKE_BINARY_DIR}
+  COMMENT "Copying lua tree")
+
+################################################################################
 # Build configuration                                                          #
 ################################################################################
 

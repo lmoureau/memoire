@@ -2,21 +2,21 @@
 all: raw calo notcalo custom
 .PHONY: all raw calo notcalo custom
 
-export PATH := ../build:../buildi7:$(PATH)
+export PATH := ..:$(PATH)
 
 define process
-data/$(strip $(3)).events: data/$(strip $(1)).events $(2);
-	process $(2) >data/$(strip $(3)).events <data/$(strip $(1)).events
+$(strip $(3)).events: $(strip $(1)).events $(2);
+	process $(2) >$(strip $(3)).events <$(strip $(1)).events
 endef
 
 define process_not
-data/$(strip $(3)).events: data/$(strip $(1)).events $(2);
-	process not $(2) >data/$(strip $(3)).events <data/$(strip $(1)).events
+$(strip $(3)).events: $(strip $(1)).events $(2);
+	process not $(2) >$(strip $(3)).events <$(strip $(1)).events
 endef
 
 define accumulate
-data/$(strip $(3)).hist: data/$(strip $(1)).events $(2);
-	accumulate $(strip $(2)) >data/$(strip $(3)).hist <data/$(strip $(1)).events
+$(strip $(3)).hist: $(strip $(1)).events $(2);
+	accumulate $(strip $(2)) >$(strip $(3)).hist <$(strip $(1)).events
 endef
 
 #
@@ -25,8 +25,8 @@ endef
 
 ## BASIC ##
 
-data/out.events:
-	readroot data/out.root >data/out.events
+out.events:
+	readroot data/out.root >out.events
 
 $(call process, out, good_tracks.lua, out.good_tracks)
 
@@ -68,11 +68,11 @@ $(call process_not, out.4tracks.neutral, calocut.lua, out.4tracks.not.calo)
 
 ## RAW ##
 
-raw: data/out.2tracks.hist \
-     data/out.2tracks.os.hist \
-     data/out.2tracks.ss.hist \
-     data/out.3tracks.hist \
-     data/out.4tracks.hist
+raw: out.2tracks.hist \
+     out.2tracks.os.hist \
+     out.2tracks.ss.hist \
+     out.3tracks.hist \
+     out.4tracks.hist
 
 $(call accumulate, out.2tracks.rho, rhofiller.lua, out.2tracks)
 $(call accumulate, out.2tracks.os, rhofiller.lua, out.2tracks.os)
@@ -82,10 +82,10 @@ $(call accumulate, out.4tracks.neutral, rhofiller.lua, out.4tracks)
 
 ## CALO ##
 
-calo: data/out.2tracks.os.calo.hist \
-      data/out.2tracks.ss.calo.hist \
-      data/out.3tracks.calo.hist \
-      data/out.4tracks.calo.hist
+calo: out.2tracks.os.calo.hist \
+      out.2tracks.ss.calo.hist \
+      out.3tracks.calo.hist \
+      out.4tracks.calo.hist
 
 $(call accumulate, out.2tracks.os.calo, rhofiller.lua, out.2tracks.os.calo)
 $(call accumulate, out.2tracks.ss.calo, rhofiller.lua, out.2tracks.ss.calo)
@@ -94,10 +94,10 @@ $(call accumulate, out.4tracks.calo, rhofiller.lua, out.4tracks.calo)
 
 ## NOT CALO ##
 
-notcalo: data/out.2tracks.os.not.calo.hist \
-         data/out.2tracks.ss.not.calo.hist \
-         data/out.3tracks.not.calo.hist \
-         data/out.4tracks.not.calo.hist
+notcalo: out.2tracks.os.not.calo.hist \
+         out.2tracks.ss.not.calo.hist \
+         out.3tracks.not.calo.hist \
+         out.4tracks.not.calo.hist
 
 $(call accumulate, out.2tracks.os.not.calo, rhofiller.lua, out.2tracks.os.not.calo)
 $(call accumulate, out.2tracks.ss.not.calo, rhofiller.lua, out.2tracks.ss.not.calo)
@@ -106,12 +106,12 @@ $(call accumulate, out.4tracks.not.calo, rhofiller.lua, out.4tracks.not.calo)
 
 ## CUSTOM ##
 
-custom: data/out.2tracks.os.calo.ct.hist \
-        data/out.2tracks.os.not.calo.ct.hist \
-        data/out.3tracks.calo.ct.hist \
-        data/out.3tracks.not.calo.ct.hist \
-        data/out.4tracks.calo.ct.hist \
-        data/out.4tracks.not.calo.ct.hist
+custom: out.2tracks.os.calo.ct.hist \
+        out.2tracks.os.not.calo.ct.hist \
+        out.3tracks.calo.ct.hist \
+        out.3tracks.not.calo.ct.hist \
+        out.4tracks.calo.ct.hist \
+        out.4tracks.not.calo.ct.hist
 
 $(call accumulate, out.2tracks.os.calo, calo_track.lua, out.2tracks.os.calo.ct)
 $(call accumulate, out.2tracks.os.not.calo, calo_track.lua, out.2tracks.os.not.calo.ct)

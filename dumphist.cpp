@@ -1,6 +1,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <numeric>
 
 #include "histogram.h"
 #include "histogram_reader.h"

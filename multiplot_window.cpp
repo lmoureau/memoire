@@ -198,7 +198,7 @@ void multiplot_window::populate_tree()
       _tree->addTopLevelItem(item);
       item->setText(0, info.fileName());
 
-      histogram_reader reader(info.filePath().toStdString());
+      histogram_reader reader(info.filePath().toLocal8Bit().constData());
       auto names = reader.names();
       for (auto hname: names) {
         file_plot_source *src = new file_plot_source(info.filePath(), hname);

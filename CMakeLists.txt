@@ -107,3 +107,13 @@ add_executable(process process.cpp)
 target_link_libraries(process ioutils)
 
 install(TARGETS memoire dump RUNTIME DESTINATION bin)
+
+################################################################################
+# Run analysis                                              #
+################################################################################
+
+add_custom_target(run_analysis ALL
+  make -j$$(nproc)
+  WORKING_DIRECTORY analysis
+  DEPENDS accumulate multiplot process readroot
+  COMMENT "Running the analysis")

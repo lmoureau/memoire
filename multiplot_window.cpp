@@ -191,7 +191,7 @@ QWidget *multiplot_window::create_config_bar()
 
 void multiplot_window::populate_tree()
 {
-  QDir dir;
+  QDir dir("analysis");
   for (auto info: dir.entryInfoList(QDir::Files, QDir::Name)) {
     if (info.fileName().endsWith(".hist")) {
       QTreeWidgetItem *item = new QTreeWidgetItem();

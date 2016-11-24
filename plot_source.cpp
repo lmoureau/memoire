@@ -12,7 +12,7 @@ file_plot_source::file_plot_source(const QString &file_path,
                                    const std::string &name,
                                    QObject *parent) :
   plot_source(parent),
-  _file_path(file_path.toStdString()),
+  _file_path(file_path.toAscii().constData()),
   _name(name)
 {}
 

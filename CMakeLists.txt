@@ -109,7 +109,7 @@ target_link_libraries(process ioutils)
 install(TARGETS memoire dump RUNTIME DESTINATION bin)
 
 ################################################################################
-# Run analysis                                              #
+# Run analysis                                                                 #
 ################################################################################
 
 add_custom_target(run_analysis ALL

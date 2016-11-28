@@ -19,6 +19,8 @@ local phi = function(p)
   return math.atan2(p.y, p.x)
 end
 
+if not e.rho then return end
+
 -- hcal
 for _, track in ipairs(e.tracks) do
   local track_eta = eta(track.p)

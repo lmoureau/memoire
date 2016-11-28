@@ -33,7 +33,11 @@ else
 end
 
 if track1 and track2 then
-  if (track1.p + track2.p):norm() < 2 then
+  local m_pi_pi = (track1.p + track2.p):norm()
+  local k1 = vec.m_x_y_z(0.497614, track1.p.x, track1.p.y, track1.p.z)
+  local k2 = vec.m_x_y_z(0.497614, track2.p.x, track2.p.y, track2.p.z)
+  local m_k_k = (k1 + k2):norm()
+  if m_pi_pi < 2 and math.abs(m_k_k - 1.019461) > 0.005 then
     -- Don't let the J/psi slip in
     e.rho = {
       q = track1.q + track2.q,

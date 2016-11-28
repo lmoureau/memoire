@@ -84,6 +84,12 @@ function vec.m_e_phi_eta(m, e, phi, eta)
   return vec.new(e, pt * math.cos(phi), pt * math.sin(phi), p * math.tanh(eta))
 end
 
+function vec.m_x_y_z(m, x, y, z)
+  local r2 = x^2 + y^2 + z^2
+  local t = math.sqrt(m^2 + r2)
+  return vec.new(t, x, y, z)
+end
+
 function vec:clone()
   return vec.new(self.t, self.x, self.y, self.z)
 end

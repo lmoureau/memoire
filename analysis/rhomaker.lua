@@ -1,8 +1,8 @@
 local math = math
 local e = e
 
-local track1 = 0
-local track2 = 0
+local track1 = false
+local track2 = false
 
 local mass_770 = function(t1, t2)
   return math.abs((t1.p + t2.p):norm() - 0.775)
@@ -33,8 +33,13 @@ else
 end
 
 if track1 and track2 then
-  e.rho = {
-    q = track1.q + track2.q,
-    p = track1.p + track2.p
-  }
+  if (track1.p + track2.p):norm() < 2 then
+    -- Don't let the J/psi slip in
+    e.rho = {
+      q = track1.q + track2.q,
+      p = track1.p + track2.p
+    }
+  else
+    return false
+  end
 end

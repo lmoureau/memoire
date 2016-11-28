@@ -1,6 +1,6 @@
 
-all: raw calo notcalo custom
-.PHONY: all raw calo notcalo custom
+all: raw calo notcalo calodeta custom
+.PHONY: all raw calo notcalo calodeta custom
 
 export PATH := ..:$(PATH)
 
@@ -25,7 +25,7 @@ endef
 
 ## BASIC ##
 
-out.events:
+out.events: ../readroot
 	readroot data/out.root >out.events
 
 $(call process, out, good_tracks.lua, out.good_tracks)
@@ -104,14 +104,14 @@ $(call accumulate, out.2tracks.ss.not.calo, rhofiller.lua, out.2tracks.ss.not.ca
 $(call accumulate, out.3tracks.not.calo, rhofiller.lua, out.3tracks.not.calo)
 $(call accumulate, out.4tracks.not.calo, rhofiller.lua, out.4tracks.not.calo)
 
-## CUSTOM ##
+## CALO deta dphi dR ##
 
-custom: out.2tracks.os.calo.ct.hist \
-        out.2tracks.os.not.calo.ct.hist \
-        out.3tracks.calo.ct.hist \
-        out.3tracks.not.calo.ct.hist \
-        out.4tracks.calo.ct.hist \
-        out.4tracks.not.calo.ct.hist
+calodeta: out.2tracks.os.calo.ct.hist \
+	  out.2tracks.os.not.calo.ct.hist \
+          out.3tracks.calo.ct.hist \
+          out.3tracks.not.calo.ct.hist \
+          out.4tracks.calo.ct.hist \
+          out.4tracks.not.calo.ct.hist
 
 $(call accumulate, out.2tracks.os.calo, calo_track.lua, out.2tracks.os.calo.ct)
 $(call accumulate, out.2tracks.os.not.calo, calo_track.lua, out.2tracks.os.not.calo.ct)
@@ -119,3 +119,7 @@ $(call accumulate, out.3tracks.calo, calo_track.lua, out.3tracks.calo.ct)
 $(call accumulate, out.3tracks.not.calo, calo_track.lua, out.3tracks.not.calo.ct)
 $(call accumulate, out.4tracks.calo, calo_track.lua, out.4tracks.calo.ct)
 $(call accumulate, out.4tracks.not.calo, calo_track.lua, out.4tracks.not.calo.ct)
+
+## CUSTOM ##
+
+custom:

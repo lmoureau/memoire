@@ -24,6 +24,9 @@ if e.rho then
 
   H.castor:fill(e.castor_energy)
 
+  H.zdc_plus:fill(e.zdc.plus)
+  H.zdc_minus:fill(e.zdc.minus)
+
   H.rho_mass:fill(e.rho.p:norm())
   H.rho_pt2:fill(sumsq(e.rho.p.x, e.rho.p.y))
 end

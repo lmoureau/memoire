@@ -217,7 +217,8 @@ void root_parser::reset()
 struct hlt_parser::data
 {
   TFile *file;
-  TTree *tracks_tree, *castor_tree, *hbhe_tree, *hf_tree, *eb_tree, *ee_tree;
+  TTree *tracks_tree, *castor_tree, *hbhe_tree, *hf_tree, *eb_tree, *ee_tree,
+        *zdc_tree;
   long count, current;
   event rec;
 
@@ -239,6 +240,8 @@ struct hlt_parser::data
   int   castorhitmodule[BIG_HIT_COUNT];
   int   castorhitsector[BIG_HIT_COUNT];
   float castorhitdata[BIG_HIT_COUNT];
+
+  float zdc_plus[10], zdc_minus[10];
 };
 
 hlt_parser::hlt_parser(const std::string &filename) :
@@ -305,6 +308,10 @@ hlt_parser::hlt_parser(const std::string &filename) :
   _d->eb_tree->SetBranchAddress("EBEnergyMaxMinus", &_d->rec.ecal.barrel.minus);
   _d->eb_tree->SetBranchAddress("EBEtaMaxMinus", &_d->rec.ecal.barrel.eta_minus);
   _d->eb_tree->SetBranchAddress("EBPhiMaxMinus", &_d->rec.ecal.barrel.phi_minus);
+
+  _d->file->GetObject("ZDCDigiTree", _d->zdc_tree);
+  _d->zdc_tree->SetBranchAddress("posHD1fC", &_d->zdc_plus);
+  _d->zdc_tree->SetBranchAddress("negHD1fC", &_d->zdc_minus);
 }
 
 bool hlt_parser::end()
@@ -321,6 +328,7 @@ void hlt_parser::read()
   _d->hf_tree->GetEntry(_d->current);
   _d->eb_tree->GetEntry(_d->current);
   _d->ee_tree->GetEntry(_d->current);
+  _d->zdc_tree->GetEntry(_d->current);
 
   for (int i = 0; i < _d->ntracks; ++i) {
     track trk;
@@ -387,6 +395,12 @@ void hlt_parser::fill_rec(sol::state &lua, sol::table &event)
   hcal["fm"] = m_e_phi_eta(0, _d->rec.hcal.forward.minus,
                               _d->rec.hcal.forward.phi_minus,
                               _d->rec.hcal.forward.eta_minus).get<sol::table>();
+
+  auto zdc = event["zdc"];
+  zdc = lua.create_table();
+  // FIXME Dark magic.
+  zdc["plus"] = _d->zdc_plus[4];
+  zdc["minus"] = _d->zdc_minus[4];
 
   auto tracks = event["tracks"];
   tracks = lua.create_table();

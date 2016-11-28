@@ -277,6 +277,9 @@ hlt_parser::hlt_parser(const std::string &filename) :
   _d->hbhe_tree->SetBranchAddress("HEPhiMaxMinus", &_d->rec.hcal.endcap.phi_minus);
   _d->hbhe_tree->SetBranchAddress("HBEnergyMaxPlus", &_d->rec.hcal.barrel.plus);
   _d->hbhe_tree->SetBranchAddress("HBEtaMaxPlus", &_d->rec.hcal.barrel.eta_plus);
+  _d->hbhe_tree->SetBranchAddress("HBPhiMaxPlus", &_d->rec.hcal.barrel.phi_plus);
+  _d->hbhe_tree->SetBranchAddress("HBEnergyMaxMinus", &_d->rec.hcal.barrel.minus);
+  _d->hbhe_tree->SetBranchAddress("HBEtaMaxMinus", &_d->rec.hcal.barrel.eta_minus);
   _d->hbhe_tree->SetBranchAddress("HBPhiMaxMinus", &_d->rec.hcal.barrel.phi_minus);
 
   _d->file->GetObject("HFRecHitTree", _d->hf_tree);

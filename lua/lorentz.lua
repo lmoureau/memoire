@@ -81,9 +81,7 @@ end
 function vec.m_e_phi_eta(m, e, phi, eta)
   local p = math.sqrt(e^2 - m^2)
   local pt = p / math.cosh(eta)
-  local v = vec.new(e, pt * math.cos(phi), pt * math.sin(phi), p * math.tanh(eta))
---   error("This is good")
-  return v
+  return vec.new(e, pt * math.cos(phi), pt * math.sin(phi), p * math.tanh(eta))
 end
 
 function vec:clone()

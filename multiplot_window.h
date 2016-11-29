@@ -32,6 +32,8 @@ class multiplot_window : public QMainWindow
   QVBoxLayout *_vbox;
   QMap<QString, plot_data> _data;
 
+  double _min, _max;
+  int _bins;
   plot_source::config _config;
 
 public:
@@ -43,6 +45,7 @@ private:
   void disable_plot(const QString &name);
   void update_plots();
 
+  void update_config();
   QColor next_color();
 
   QWidget *create_config_bar();

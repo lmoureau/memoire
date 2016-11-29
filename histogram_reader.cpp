@@ -44,6 +44,28 @@ std::vector<std::string> histogram_reader::names() const
   return ret;
 }
 
+std::vector<std::pair<double, double>>
+histogram_reader::data(const std::string &name) const
+{
+  // Find the histogram data
+  sol::object data = _data[name];
+  if (data.get_type() != sol::type::table) {
+    throw std::range_error("No histogram named \"" + name + "\" found!");
+  }
+  sol::table t = data;
+
+  // Copy it
+  auto vector = std::vector<std::pair<double, double>>();
+  t.for_each([&](const sol::object &key, const sol::object &value) {
+    if (key.get_type() == sol::type::number &&
+        value.get_type() == sol::type::number) {
+      vector.push_back(std::make_pair(key.as<double>(), value.as<double>()));
+    }
+  });
+
+  return vector;
+}
+
 hist::histogram histogram_reader::histogram(const std::string &name,
                                             double min, double max,
                                             int nbins) const

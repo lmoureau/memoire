@@ -21,7 +21,8 @@ multiplot_window::multiplot_window() :
   _tree(new QTreeWidget),
   _plot(new QCustomPlot),
   _vbox(new QVBoxLayout),
-  _config(plot_source::config{ 0, 2, 100 })
+  _min(0), _max(2), _bins(100),
+  _config(plot_source::config{ hist::linear_axis<double>(_min, _max, _bins) })
 {
   QSplitter *splitter = new QSplitter(Qt::Horizontal);
   setCentralWidget(splitter);
@@ -153,7 +154,7 @@ QWidget *multiplot_window::create_config_bar()
   QDoubleSpinBox *box = new QDoubleSpinBox;
   box->setMinimum(std::numeric_limits<double>::lowest());
   box->setMaximum(std::numeric_limits<double>::max());
-  box->setValue(_config.min);
+  box->setValue(_min);
   label->setBuddy(box);
   connect(box, SIGNAL(valueChanged(double)), this, SLOT(update_min(double)));
   layout->addWidget(box);
@@ -164,7 +165,7 @@ QWidget *multiplot_window::create_config_bar()
   box = new QDoubleSpinBox;
   box->setMinimum(std::numeric_limits<double>::lowest());
   box->setMaximum(std::numeric_limits<double>::max());
-  box->setValue(_config.max);
+  box->setValue(_max);
   label->setBuddy(box);
   connect(box, SIGNAL(valueChanged(double)), this, SLOT(update_max(double)));
   layout->addWidget(box);
@@ -175,7 +176,7 @@ QWidget *multiplot_window::create_config_bar()
   QSpinBox *ibox = new QSpinBox;
   ibox->setMinimum(1);
   ibox->setMaximum(1000);
-  ibox->setValue(_config.bins);
+  ibox->setValue(_bins);
   label->setBuddy(ibox);
   connect(ibox, SIGNAL(valueChanged(int)), this, SLOT(update_bins(int)));
   layout->addWidget(ibox);
@@ -216,20 +217,35 @@ void multiplot_window::populate_tree()
 
 void multiplot_window::update_min(double min)
 {
-  _config.min = min;
+  _min = min;
+  update_config();
   update_plots();
 }
 
 void multiplot_window::update_max(double max)
 {
-  _config.max = max;
+  _max = max;
+  update_config();
   update_plots();
 }
 
 void multiplot_window::update_bins(int bins)
 {
-  _config.bins = bins;
+  _bins = bins;
+  _config.axis = hist::linear_axis<double>(_min, _max, _bins);
   update_plots();
+}
+
+void multiplot_window::update_config()
+{
+  // Update the plot range
+  for (auto &data: _data) {
+    if (data.plottable != nullptr) {
+      // Plot is shown
+      data.source->minmax(_min, _max);
+    }
+  }
+  _config.axis = hist::linear_axis<double>(_min, _max, _bins);
 }
 
 void multiplot_window::set_log_scale(bool log)

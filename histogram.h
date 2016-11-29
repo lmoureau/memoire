@@ -31,6 +31,9 @@ public:
   axis_type bin_center(int bin) const
   { return _begin + (bin + .5) * _bin_width; }
   axis_type bin_start(int bin) const { return _begin + (bin + 1) * _bin_width; }
+
+  axis_type min() const { return _begin; }
+  axis_type max() const { return _end; }
 };
 
 template<typename _bin_type_>

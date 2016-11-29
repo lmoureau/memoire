@@ -91,6 +91,7 @@ void multiplot_window::enable_plot(const QString &name)
 
   data.list_item = new QListWidgetItem(data.display_name);
   data.list_item->setData(Qt::TextColorRole, data.color);
+  data.list_item->setFlags(Qt::ItemIsEditable | data.list_item->flags());
   _plot_list_widget->addItem(data.list_item);
 
   data.index = _plots.size();
@@ -138,6 +139,23 @@ void multiplot_window::update_plots()
     }
   }
 
+  update_display_names();
+  update_lua_plot();
+
+  _plot->xAxis->rescale();
+  _plot->yAxis->rescale();
+  _plot->replot();
+}
+
+void multiplot_window::update_display_names()
+{
+  for (int i = 0; i < _plots.size(); ++i) {
+    _plots[i].display_name = _plot_list_widget->item(i)->text();
+  }
+}
+
+void multiplot_window::update_lua_plot()
+{
   lua_plot_source src;
   src.set_expression(_function_edit->text());
   if (_function != nullptr) {
@@ -149,10 +167,6 @@ void multiplot_window::update_plots()
     _function->setPen(QColor(Qt::darkYellow));
     _plot->addPlottable(_function);
   }
-
-  _plot->xAxis->rescale();
-  _plot->yAxis->rescale();
-  _plot->replot();
 }
 
 QColor multiplot_window::next_color()
@@ -258,7 +272,7 @@ void multiplot_window::populate_tree()
         _data[name] = plot_data{
           info.filePath(),
           hname,
-          hname.c_str(),
+          name,
           nullptr,
           child,
           nullptr,

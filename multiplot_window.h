@@ -67,6 +67,9 @@ private:
   QWidget *create_config_bar();
   void populate_tree();
 
+  void update_display_names();
+  void update_lua_plot();
+
 private slots:
   void item_double_clicked(QTreeWidgetItem *item);
   void update_min(double min);

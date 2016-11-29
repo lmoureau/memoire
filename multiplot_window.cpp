@@ -239,13 +239,15 @@ void multiplot_window::update_bins(int bins)
 void multiplot_window::update_config()
 {
   // Update the plot range
+  double min = _min;
+  double max = _max;
   for (auto &data: _data) {
     if (data.plottable != nullptr) {
       // Plot is shown
-      data.source->minmax(_min, _max);
+      data.source->minmax(min, max);
     }
   }
-  _config.axis = hist::linear_axis<double>(_min, _max, _bins);
+  _config.axis = hist::linear_axis<double>(min, max, _bins);
 }
 
 void multiplot_window::set_log_scale(bool log)

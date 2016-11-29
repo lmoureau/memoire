@@ -21,6 +21,8 @@ public:
 
   std::vector<std::string> names() const;
   std::vector<std::pair<double, double>> data(const std::string &name) const;
+
+  [[deprecated]]
   hist::histogram histogram(const std::string &name,
                             double min = std::numeric_limits<double>::lowest(),
                             double max = std::numeric_limits<double>::max(),

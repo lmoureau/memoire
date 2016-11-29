@@ -35,7 +35,10 @@ class multiplot_window : public QMainWindow
     QListWidgetItem *list_item;
     QCPAbstractPlottable *plottable;
     QColor color;
-    int index;
+
+    bool operator== (const plot_data &other) {
+      return name == other.name && source == other.source;
+    }
   };
 
   QVector<plot_data> _plots;

@@ -94,7 +94,6 @@ void multiplot_window::enable_plot(const QString &name)
   data.list_item->setFlags(Qt::ItemIsEditable | data.list_item->flags());
   _plot_list_widget->addItem(data.list_item);
 
-  data.index = _plots.size();
   _plots.append(data);
 
   update_lua_plot();
@@ -125,7 +124,7 @@ void multiplot_window::disable_plot(const QString &name)
     }
   }
 
-  _plots.remove(data.index);
+  _plots.remove(_plots.indexOf(data));
   update_lua_plot();
 }
 
@@ -283,8 +282,7 @@ void multiplot_window::populate_tree()
           child,
           nullptr,
           nullptr,
-          QColor(),
-          0
+          QColor()
         };
       }
     }

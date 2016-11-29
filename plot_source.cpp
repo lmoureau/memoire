@@ -48,3 +48,14 @@ QCPAbstractPlottable *file_plot_source::plot(QCPAxis *x, QCPAxis *y,
   graph->setLineStyle(QCPGraph::lsStepCenter);
   return graph;
 }
+
+double file_plot_source::value_at(double x, const config &config)
+{
+  hist::histogram hist = hist::histogram(config.axis);
+  for (auto &point : _data) {
+    hist.bin(point.first, point.second);
+  }
+
+  int bin = config.axis(x);
+  return hist.data().at(bin);
+}

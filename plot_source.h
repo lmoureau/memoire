@@ -42,6 +42,7 @@ public:
   void minmax(double &min, double &max) const override;
   QCPAbstractPlottable *plot(QCPAxis *x, QCPAxis *y,
                              const config &config) override;
+  double value_at(double x, const config &config) override;
 };
 
 #endif // PLOT_SOURCE_H

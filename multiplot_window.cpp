@@ -63,6 +63,9 @@ void multiplot_window::enable_plot(const QString &name)
   data.item->setIcon(0, QIcon::fromTheme("status-ok"));
 
   assert(data.plottable == nullptr);
+  if (data.source == nullptr) {
+    data.source = new file_plot_source(data.path, data.name);
+  }
   data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
   data.plottable->setName(name);
   data.color = next_color();
@@ -202,14 +205,19 @@ void multiplot_window::populate_tree()
       histogram_reader reader(info.filePath().toLocal8Bit().constData());
       auto names = reader.names();
       for (auto hname: names) {
-        file_plot_source *src = new file_plot_source(info.filePath(), hname);
         QString name = info.fileName() + "#" + hname.c_str();
 
         QTreeWidgetItem *child = new QTreeWidgetItem(item);
         child->setText(0, hname.c_str());
         child->setData(0, Qt::UserRole, name);
 
-        _data[name] = plot_data{ src, child, nullptr, QColor() };
+        _data[name] = plot_data{
+          info.filePath(),
+          hname,
+          nullptr,
+          child,
+          nullptr,
+          QColor() };
       }
     }
   }

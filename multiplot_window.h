@@ -21,6 +21,8 @@ class multiplot_window : public QMainWindow
 
   struct plot_data
   {
+    QString path;
+    std::string name;
     plot_source *source;
     QTreeWidgetItem *item;
     QCPAbstractPlottable *plottable;

@@ -9,6 +9,7 @@
 #include <QIcon>
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QSpinBox>
 #include <QSplitter>
 #include <QSignalMapper>
@@ -20,6 +21,7 @@
 #include "qcustomplot.h"
 
 multiplot_window::multiplot_window() :
+  _plot_list_widget(new QListWidget),
   _tree(new QTreeWidget),
   _plot(new QCustomPlot),
   _vbox(new QVBoxLayout),
@@ -49,13 +51,13 @@ multiplot_window::multiplot_window() :
   _plot->axisRect()->setRangeZoom(Qt::Horizontal);
   _plot->axisRect()->setRangeDrag(Qt::Horizontal);
   _plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-  _plot->setAutoAddPlottableToLegend(true);
-  _plot->legend->setVisible(true);
 
   _vbox->addWidget(_function_edit);
   _function_edit->setPlaceholderText(tr("Enter expression..."));
   connect(_function_edit, SIGNAL(editingFinished()),
           this, SLOT(update_plots()));
+
+  splitter->addWidget(_plot_list_widget);
 
   update_config();
 }
@@ -78,7 +80,7 @@ void multiplot_window::enable_plot(const QString &name)
     data.source = new file_plot_source(data.path, data.name);
   }
   data.plottable = data.source->plot(_plot->xAxis, _plot->yAxis, _config);
-  data.plottable->setName(name);
+  data.plottable->setName(data.display_name);
   data.color = next_color();
   data.plottable->setPen(data.color);
   data.item->setData(0, Qt::TextColorRole, data.color);
@@ -86,6 +88,13 @@ void multiplot_window::enable_plot(const QString &name)
   _plot->xAxis->rescale();
   _plot->yAxis->rescale();
   _plot->replot();
+
+  data.list_item = new QListWidgetItem(data.display_name);
+  data.list_item->setData(Qt::TextColorRole, data.color);
+  _plot_list_widget->addItem(data.list_item);
+
+  data.index = _plots.size();
+  _plots.append(data);
 }
 
 void multiplot_window::disable_plot(const QString &name)
@@ -103,6 +112,17 @@ void multiplot_window::disable_plot(const QString &name)
   _plot->xAxis->rescale();
   _plot->yAxis->rescale();
   _plot->replot();
+
+  for (int i = 0; i < _plot_list_widget->count(); ++i) {
+    if (_plot_list_widget->item(i) == data.list_item) {
+      _plot_list_widget->takeItem(i);
+      delete data.list_item;
+      data.list_item = nullptr;
+      break;
+    }
+  }
+
+  _plots.remove(data.index);
 }
 
 void multiplot_window::update_plots()
@@ -238,10 +258,14 @@ void multiplot_window::populate_tree()
         _data[name] = plot_data{
           info.filePath(),
           hname,
+          hname.c_str(),
           nullptr,
           child,
           nullptr,
-          QColor() };
+          nullptr,
+          QColor(),
+          0
+        };
       }
     }
   }

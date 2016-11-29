@@ -2,6 +2,8 @@
 #define MULTIPLOT_WINDOW_H
 
 #include <QColor>
+#include <QVector>
+#include <QAbstractListModel>
 #include <QMainWindow>
 #include <QMap>
 
@@ -9,6 +11,8 @@
 
 class QDoubleSpinBox;
 class QLineEdit;
+class QListWidget;
+class QListWidgetItem;
 class QSignalMapper;
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -25,12 +29,17 @@ class multiplot_window : public QMainWindow
   {
     QString path;
     std::string name;
+    QString display_name;
     plot_source *source;
     QTreeWidgetItem *item;
+    QListWidgetItem *list_item;
     QCPAbstractPlottable *plottable;
     QColor color;
+    int index;
   };
 
+  QVector<plot_data> _plots;
+  QListWidget *_plot_list_widget;
   QDoubleSpinBox *_minbox, *_maxbox;
   QTreeWidget *_tree;
   QCustomPlot *_plot;

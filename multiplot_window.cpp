@@ -96,6 +96,8 @@ void multiplot_window::enable_plot(const QString &name)
 
   data.index = _plots.size();
   _plots.append(data);
+
+  update_lua_plot();
 }
 
 void multiplot_window::disable_plot(const QString &name)
@@ -124,6 +126,7 @@ void multiplot_window::disable_plot(const QString &name)
   }
 
   _plots.remove(data.index);
+  update_lua_plot();
 }
 
 void multiplot_window::update_plots()
@@ -158,6 +161,9 @@ void multiplot_window::update_lua_plot()
 {
   lua_plot_source src;
   src.set_expression(_function_edit->text());
+  for (auto &info : _plots) {
+    src.add_global(info.display_name, info.source);
+  }
   if (_function != nullptr) {
     _plot->removePlottable(_function);
   }

@@ -6,9 +6,15 @@ lua_plot_source::lua_plot_source(QObject *parent) :
   plot_source(parent)
 {}
 
+void lua_plot_source::add_global(const QString &name, plot_source *source)
+{
+  if (source != this) {
+    _globals.push_back(global{ name, source });
+  }
+}
+
 void lua_plot_source::minmax(double &min, double &max) const
 {}
-
 
 QCPAbstractPlottable *lua_plot_source::plot(QCPAxis *x, QCPAxis *y,
                                             const config &config)
@@ -37,6 +43,12 @@ QCPAbstractPlottable *lua_plot_source::plot(QCPAxis *x, QCPAxis *y,
     auto x = lua["x"];
     for (int i = 0; i < config.axis.bin_count(); ++i) {
       x = config.axis.bin_center(i);
+
+      // Add global variables coming from other sources
+      for (auto &g : _globals) {
+        lua[g.name.toLocal8Bit().constData()] = g.source->value_at(x, config);
+      }
+
       auto result = function();
       if (result.valid()) {
         sol::object val = result.get<sol::object>();

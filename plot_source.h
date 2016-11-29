@@ -24,6 +24,7 @@ public:
   virtual void minmax(double &min, double &max) const = 0;
   virtual QCPAbstractPlottable *plot(QCPAxis *x, QCPAxis *y,
                                      const config &config) = 0;
+  virtual double value_at(double x, const config &config) { return 0./0.; }
 };
 
 class file_plot_source : public plot_source

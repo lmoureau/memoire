@@ -158,6 +158,9 @@ void multiplot_window::update_display_names()
 
 void multiplot_window::update_lua_plot()
 {
+  if (_function_edit->text().trimmed().isEmpty()) {
+    return;
+  }
   lua_plot_source src;
   src.set_expression(_function_edit->text());
   for (auto &info : _plots) {

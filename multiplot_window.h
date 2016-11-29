@@ -8,6 +8,7 @@
 #include "plot_source.h"
 
 class QCustomPlot;
+class QDoubleSpinBox;
 class QSignalMapper;
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -29,6 +30,7 @@ class multiplot_window : public QMainWindow
     QColor color;
   };
 
+  QDoubleSpinBox *_minbox, *_maxbox;
   QTreeWidget *_tree;
   QCustomPlot *_plot;
   QVBoxLayout *_vbox;

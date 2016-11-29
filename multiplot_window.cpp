@@ -47,6 +47,8 @@ multiplot_window::multiplot_window() :
   _plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
   _plot->setAutoAddPlottableToLegend(true);
   _plot->legend->setVisible(true);
+
+  update_config();
 }
 
 bool multiplot_window::is_plot_enabled(const QString &name)
@@ -154,24 +156,24 @@ QWidget *multiplot_window::create_config_bar()
   QLabel *label = new QLabel(tr("M&in:"));
   layout->addWidget(label);
 
-  QDoubleSpinBox *box = new QDoubleSpinBox;
-  box->setMinimum(std::numeric_limits<double>::lowest());
-  box->setMaximum(std::numeric_limits<double>::max());
-  box->setValue(_min);
-  label->setBuddy(box);
-  connect(box, SIGNAL(valueChanged(double)), this, SLOT(update_min(double)));
-  layout->addWidget(box);
+  _minbox = new QDoubleSpinBox;
+  _minbox->setMinimum(std::numeric_limits<double>::lowest());
+  _minbox->setMaximum(std::numeric_limits<double>::max());
+  _minbox->setValue(_min);
+  label->setBuddy(_minbox);
+  connect(_minbox, SIGNAL(valueChanged(double)), this, SLOT(update_min(double)));
+  layout->addWidget(_minbox);
 
   label = new QLabel(tr("M&ax:"));
   layout->addWidget(label);
 
-  box = new QDoubleSpinBox;
-  box->setMinimum(std::numeric_limits<double>::lowest());
-  box->setMaximum(std::numeric_limits<double>::max());
-  box->setValue(_max);
-  label->setBuddy(box);
-  connect(box, SIGNAL(valueChanged(double)), this, SLOT(update_max(double)));
-  layout->addWidget(box);
+  _maxbox = new QDoubleSpinBox;
+  _maxbox->setMinimum(std::numeric_limits<double>::lowest());
+  _maxbox->setMaximum(std::numeric_limits<double>::max());
+  _maxbox->setValue(_max);
+  label->setBuddy(_maxbox);
+  connect(_maxbox, SIGNAL(valueChanged(double)), this, SLOT(update_max(double)));
+  layout->addWidget(_maxbox);
 
   label = new QLabel(tr("&Bins:"));
   layout->addWidget(label);
@@ -246,6 +248,10 @@ void multiplot_window::update_bins(int bins)
 
 void multiplot_window::update_config()
 {
+  // Update the boxes range
+  _minbox->setMaximum(_max - 0.01);
+  _maxbox->setMinimum(_min + 0.01);
+
   // Update the plot range
   double min = _min;
   double max = _max;

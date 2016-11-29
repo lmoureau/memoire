@@ -87,6 +87,7 @@ target_link_libraries(dumphist ioutils)
 
 # Advanced tool to create plots with several histograms
 add_executable(multiplot multiplot.cpp
+  lua_plot_source.cpp
   multiplot_window.cpp
   plot_source.cpp)
 target_link_libraries(multiplot ioutils qcustomplot)

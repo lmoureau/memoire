@@ -7,13 +7,14 @@
 
 #include "plot_source.h"
 
-class QCustomPlot;
 class QDoubleSpinBox;
+class QLineEdit;
 class QSignalMapper;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QVBoxLayout;
 
+class QCustomPlot;
 class QCPAbstractPlottable;
 
 class multiplot_window : public QMainWindow
@@ -40,6 +41,9 @@ class multiplot_window : public QMainWindow
   int _bins;
   plot_source::config _config;
 
+  QCPAbstractPlottable *_function;
+  QLineEdit *_function_edit;
+
 public:
   explicit multiplot_window();
 
@@ -47,7 +51,6 @@ private:
   bool is_plot_enabled(const QString &name);
   void enable_plot(const QString &name);
   void disable_plot(const QString &name);
-  void update_plots();
 
   void update_config();
   QColor next_color();
@@ -60,6 +63,7 @@ private slots:
   void update_min(double min);
   void update_max(double max);
   void update_bins(int bins);
+  void update_plots();
   void set_log_scale(bool log);
 };
 

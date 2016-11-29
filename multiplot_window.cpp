@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QLabel>
+#include <QLineEdit>
 #include <QSpinBox>
 #include <QSplitter>
 #include <QSignalMapper>
@@ -15,6 +16,7 @@
 #include <QVBoxLayout>
 
 #include "histogram_reader.h"
+#include "lua_plot_source.h"
 #include "qcustomplot.h"
 
 multiplot_window::multiplot_window() :
@@ -22,7 +24,9 @@ multiplot_window::multiplot_window() :
   _plot(new QCustomPlot),
   _vbox(new QVBoxLayout),
   _min(0), _max(2), _bins(100),
-  _config(plot_source::config{ hist::linear_axis<double>(_min, _max, _bins) })
+  _config(plot_source::config{ hist::linear_axis<double>(_min, _max, _bins) }),
+  _function(nullptr),
+  _function_edit(new QLineEdit)
 {
   QSplitter *splitter = new QSplitter(Qt::Horizontal);
   setCentralWidget(splitter);
@@ -47,6 +51,11 @@ multiplot_window::multiplot_window() :
   _plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
   _plot->setAutoAddPlottableToLegend(true);
   _plot->legend->setVisible(true);
+
+  _vbox->addWidget(_function_edit);
+  _function_edit->setPlaceholderText(tr("Enter expression..."));
+  connect(_function_edit, SIGNAL(editingFinished()),
+          this, SLOT(update_plots()));
 
   update_config();
 }
@@ -106,11 +115,24 @@ void multiplot_window::update_plots()
       data.plottable->setName(name);
       data.plottable->setPen(data.color);
       _plot->addPlottable(data.plottable);
-      _plot->xAxis->rescale();
-      _plot->yAxis->rescale();
-      _plot->replot();
     }
   }
+
+  lua_plot_source src;
+  src.set_expression(_function_edit->text());
+  if (_function != nullptr) {
+    _plot->removePlottable(_function);
+  }
+  _function = src.plot(_plot->xAxis, _plot->yAxis, _config);
+  if (_function != nullptr) {
+    _function->setName(_function_edit->text());
+    _function->setPen(QColor(Qt::darkYellow));
+    _plot->addPlottable(_function);
+  }
+
+  _plot->xAxis->rescale();
+  _plot->yAxis->rescale();
+  _plot->replot();
 }
 
 QColor multiplot_window::next_color()
